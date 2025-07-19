@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'imagekit',
 
     'core',
 ]
@@ -95,3 +96,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+# ImageKit settings (базовые, для WEBP по умолчанию)
+IMAGEKIT_DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'  # Хранение в media
+IMAGEKIT_CACHEFILE_DIR = 'cache/images'  # Директория для кэша, но поскольку мы генерируем в save(), это опционально
+IMAGEKIT_DEFAULT_IMAGE_CACHE_BACKEND = 'imagekit.imagecache.NonValidatingImageCacheBackend'  # Простой бэкенд без валидации
