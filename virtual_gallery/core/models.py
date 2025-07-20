@@ -1,9 +1,9 @@
-import os
-from io import BytesIO
-from PIL import Image
 from django.db import models
 from django.utils.text import slugify
+from PIL import Image
+from io import BytesIO
 from django.core.files.base import ContentFile
+import os
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
@@ -70,7 +70,6 @@ class Artist(models.Model):
 
 
 class Painting(models.Model):
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='paintings', verbose_name="Художник")
     title = models.CharField(max_length=200, verbose_name="Название")
     description = models.TextField(blank=True, verbose_name="Описание")
     creation_date = models.DateField(verbose_name="Дата создания")
@@ -173,7 +172,6 @@ class Painting(models.Model):
 
 
 class BlogPost(models.Model):
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='blog_posts', verbose_name="Художник")
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     content = models.TextField(verbose_name="Содержание")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
@@ -199,9 +197,11 @@ class BlogPost(models.Model):
         if self.image:
             # Открываем загруженное изображение
             img = Image.open(self.image)
-            # Crop 4:3, resize 400x300, WEBP quality 85
-            img = crop_to_aspect(img, 400, 300)
-            img = img.resize((400, 300), Image.LANCZOS)
+            # Resize без crop, max 800 width, preserve aspect (оригинальный формат)
+            if img.width > 800:
+                ratio = 800 / img.width
+                new_height = int(img.height * ratio)
+                img = img.resize((800, new_height), Image.LANCZOS)
             # Сохраняем в WEBP и перезаписываем image
             io = BytesIO()
             img.save(io, format='WEBP', quality=85)

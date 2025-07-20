@@ -8,7 +8,7 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['artist'] = Artist.objects.first()  # Предполагаем одного художника
+        context['artist'] = Artist.objects.first()  # Единственный художник
         context['featured_paintings'] = Painting.objects.filter(is_featured=True)
         return context
 
