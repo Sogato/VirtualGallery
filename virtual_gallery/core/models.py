@@ -4,8 +4,6 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 import os
-from imagekit.models import ProcessedImageField
-from imagekit.processors import ResizeToFill
 
 
 def crop_to_aspect(image, target_width, target_height):
@@ -46,16 +44,19 @@ class Artist(models.Model):
         if self.photo:
             # Открываем загруженное изображение
             img = Image.open(self.photo)
-            # Resize без crop, max 800 width, preserve aspect
-            if img.width > 800:
-                ratio = 800 / img.width
-                new_height = int(img.height * ratio)
-                img = img.resize((800, new_height), Image.LANCZOS)
-            # Сохраняем в WEBP и перезаписываем photo
-            io = BytesIO()
-            img.save(io, format='WEBP', quality=90)
-            name = os.path.splitext(os.path.basename(self.photo.name))[0] + '.webp'
-            self.photo.save(name, ContentFile(io.getvalue()), save=False)
+            try:
+                # Resize без crop, max 800 width, preserve aspect
+                if img.width > 800:
+                    ratio = 800 / img.width
+                    new_height = int(img.height * ratio)
+                    img = img.resize((800, new_height), Image.LANCZOS)
+                # Сохраняем в WEBP и перезаписываем photo
+                io = BytesIO()
+                img.save(io, format='WEBP', quality=90)
+                name = os.path.splitext(os.path.basename(self.photo.name))[0] + '.webp'
+                self.photo.save(name, ContentFile(io.getvalue()), save=False)
+            finally:
+                img.close()  # Закрываем изображение
 
         super().save(*args, **kwargs)
 
@@ -77,29 +78,20 @@ class Painting(models.Model):
     is_featured = models.BooleanField(default=False, verbose_name="Избранная")
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL-имя")
     image = models.ImageField(upload_to='paintings/original/', verbose_name="Оригинальное изображение")
-    small_image = ProcessedImageField(
+    small_image = models.ImageField(
         upload_to='paintings/small/',
-        processors=[ResizeToFill(400, 300)],
-        format='WEBP',
-        options={'quality': 80},
         null=True,
         blank=True,
         verbose_name="Маленькое изображение (для каталога)"
     )
-    medium_image = ProcessedImageField(
+    medium_image = models.ImageField(
         upload_to='paintings/medium/',
-        processors=[ResizeToFill(800, 600)],
-        format='WEBP',
-        options={'quality': 85},
         null=True,
         blank=True,
         verbose_name="Среднее изображение (для избранного)"
     )
-    large_image = ProcessedImageField(
+    large_image = models.ImageField(
         upload_to='paintings/large/',
-        processors=[ResizeToFill(1920, 1440)],  # Placeholder, но в save переопределим без crop
-        format='WEBP',
-        options={'quality': 90},
         null=True,
         blank=True,
         verbose_name="Большое изображение (для страницы)"
@@ -121,37 +113,45 @@ class Painting(models.Model):
                 self.slug = f"{original_slug}-{counter}"
                 counter += 1
 
-        if self.image and (not self.small_image or not self.medium_image or not self.large_image or self.image != getattr(self, '_original_image', None)):
+        if self.image and (
+                not self.small_image or not self.medium_image or not self.large_image or self.image != getattr(self,
+                                                                                                               '_original_image',
+                                                                                                               None)):
             img = Image.open(self.image)
+            try:
+                # Small: crop 4:3, resize 400x300, WEBP quality 80
+                small_img = crop_to_aspect(img.copy(), 400, 300)
+                small_img = small_img.resize((400, 300), Image.LANCZOS)
+                small_io = BytesIO()
+                small_img.save(small_io, format='WEBP', quality=80)
+                small_name = os.path.splitext(os.path.basename(self.image.name))[0] + '_small.webp'
+                self.small_image.save(small_name, ContentFile(small_io.getvalue()), save=False)
+                small_img.close()  # Закрываем изображение
 
-            # Small: crop 4:3, resize 400x300, WEBP quality 80
-            small_img = crop_to_aspect(img.copy(), 400, 300)
-            small_img = small_img.resize((400, 300), Image.LANCZOS)
-            small_io = BytesIO()
-            small_img.save(small_io, format='WEBP', quality=80)
-            small_name = os.path.splitext(os.path.basename(self.image.name))[0] + '_small.webp'
-            self.small_image.save(small_name, ContentFile(small_io.getvalue()), save=False)
+                # Medium: crop 4:3, resize 800x600, WEBP quality 85
+                medium_img = crop_to_aspect(img.copy(), 800, 600)
+                medium_img = medium_img.resize((800, 600), Image.LANCZOS)
+                medium_io = BytesIO()
+                medium_img.save(medium_io, format='WEBP', quality=85)
+                medium_name = os.path.splitext(os.path.basename(self.image.name))[0] + '_medium.webp'
+                self.medium_image.save(medium_name, ContentFile(medium_io.getvalue()), save=False)
+                medium_img.close()  # Закрываем изображение
 
-            # Medium: crop 4:3, resize 800x600, WEBP quality 85
-            medium_img = crop_to_aspect(img.copy(), 800, 600)
-            medium_img = medium_img.resize((800, 600), Image.LANCZOS)
-            medium_io = BytesIO()
-            medium_img.save(medium_io, format='WEBP', quality=85)
-            medium_name = os.path.splitext(os.path.basename(self.image.name))[0] + '_medium.webp'
-            self.medium_image.save(medium_name, ContentFile(medium_io.getvalue()), save=False)
+                # Large: NO crop, resize to max 1920 width, preserve aspect, WEBP quality 90
+                large_img = img.copy()
+                if large_img.width > 1920:
+                    ratio = 1920 / large_img.width
+                    new_height = int(large_img.height * ratio)
+                    large_img = large_img.resize((1920, new_height), Image.LANCZOS)
+                large_io = BytesIO()
+                large_img.save(large_io, format='WEBP', quality=90)
+                large_name = os.path.splitext(os.path.basename(self.image.name))[0] + '_large.webp'
+                self.large_image.save(large_name, ContentFile(large_io.getvalue()), save=False)
+                large_img.close()  # Закрываем изображение
 
-            # Large: NO crop, resize to max 1920 width, preserve aspect, WEBP quality 90
-            large_img = img.copy()
-            if large_img.width > 1920:
-                ratio = 1920 / large_img.width
-                new_height = int(large_img.height * ratio)
-                large_img = large_img.resize((1920, new_height), Image.LANCZOS)
-            large_io = BytesIO()
-            large_img.save(large_io, format='WEBP', quality=90)
-            large_name = os.path.splitext(os.path.basename(self.image.name))[0] + '_large.webp'
-            self.large_image.save(large_name, ContentFile(large_io.getvalue()), save=False)
-
-            self._original_image = self.image
+                self._original_image = self.image
+            finally:
+                img.close()  # Закрываем оригинальное изображение
 
         super().save(*args, **kwargs)
 
@@ -197,16 +197,19 @@ class BlogPost(models.Model):
         if self.image:
             # Открываем загруженное изображение
             img = Image.open(self.image)
-            # Resize без crop, max 800 width, preserve aspect (оригинальный формат)
-            if img.width > 800:
-                ratio = 800 / img.width
-                new_height = int(img.height * ratio)
-                img = img.resize((800, new_height), Image.LANCZOS)
-            # Сохраняем в WEBP и перезаписываем image
-            io = BytesIO()
-            img.save(io, format='WEBP', quality=85)
-            name = os.path.splitext(os.path.basename(self.image.name))[0] + '.webp'
-            self.image.save(name, ContentFile(io.getvalue()), save=False)
+            try:
+                # Resize без crop, max 800 width, preserve aspect (оригинальный формат)
+                if img.width > 800:
+                    ratio = 800 / img.width
+                    new_height = int(img.height * ratio)
+                    img = img.resize((800, new_height), Image.LANCZOS)
+                # Сохраняем в WEBP и перезаписываем image
+                io = BytesIO()
+                img.save(io, format='WEBP', quality=85)
+                name = os.path.splitext(os.path.basename(self.image.name))[0] + '.webp'
+                self.image.save(name, ContentFile(io.getvalue()), save=False)
+            finally:
+                img.close()  # Закрываем изображение
 
         super().save(*args, **kwargs)
 

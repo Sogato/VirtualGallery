@@ -22,7 +22,7 @@ class Command(BaseCommand):
             for ext in ['.webp', '.jpg', '.png']:  # Проверяем возможные расширения
                 full_path = photo_path + ext
                 if os.path.exists(full_path):
-                    artist.photo.save(os.path.basename(full_path), File(open(full_path, 'rb')), save=False)
+                    artist.photo = File(open(full_path, 'rb'), name=os.path.basename(full_path))
                     break
             else:
                 self.stdout.write(self.style.WARNING('Artist photo not found in media/sample_images/artist_photo (any format)'))
@@ -68,7 +68,7 @@ class Command(BaseCommand):
                 title=painting_titles[i],
                 description=descriptions[i],
                 creation_date=date.today() - timedelta(days=random.randint(1, 365*5)),
-                price=random.choice([None, round(random.uniform(1000, 10000), 2)]),
+                price=random.choice([None, round(random.uniform(1000, 10000))]),
                 is_featured=random.choice([True, False])
             )
             # Slug с транслитерацией
@@ -76,7 +76,7 @@ class Command(BaseCommand):
             for ext in ['.jpg', '.webp', '.png']:  # Проверяем возможные расширения
                 full_path = image_path + ext
                 if os.path.exists(full_path):
-                    painting.image.save(f'painting_image_{i}{ext}', File(open(full_path, 'rb')), save=False)
+                    painting.image = File(open(full_path, 'rb'), name=f'painting_image_{i}{ext}')
                     break
             else:
                 self.stdout.write(self.style.WARNING('Painting image not found in media/sample_images/painting_image (any format)'))
@@ -116,7 +116,7 @@ class Command(BaseCommand):
             for ext in ['.webp', '.jpg', '.png']:  # Проверяем возможные расширения
                 full_path = blog_image_path + ext
                 if os.path.exists(full_path):
-                    post.image.save(os.path.basename(full_path), File(open(full_path, 'rb')), save=False)
+                    post.image = File(open(full_path, 'rb'), name=f'blog_image_{i}{ext}')
                     break
             else:
                 self.stdout.write(self.style.WARNING('Blog image not found in media/sample_images/blog_image (any format)'))
