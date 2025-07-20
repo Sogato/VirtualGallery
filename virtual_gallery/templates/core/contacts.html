@@ -1,10 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- templates/core/contacts.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Контакты - Галерея Художника{% endblock %}
+
+{% block content %}
+    <!-- Contacts Section: Inspired by Boto template - clean, centered, with green accents -->
+    <section class="contacts-section py-5">
+        <div class="contact-warp mx-auto">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="mb-3">Контакты</h2>
+                    <!-- Social icons (placeholder; add real links if needed) -->
+                    <div class="contact-social mb-4">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-twitter"></i></a>
+                        <a href="#"><i class="fa fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="contact-text">
+                        {% if site_contact %}
+                            {% if site_contact.phone %}
+                                <p>Телефон: {{ site_contact.phone }}</p>
+                            {% endif %}
+                            {% if site_contact.email %}
+                                <p>Email: <a href="mailto:{{ site_contact.email }}">{{ site_contact.email }}</a></p>
+                            {% endif %}
+                        {% else %}
+                            <p>Контактная информация не указана.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- Form with modern styling, placeholders, green button -->
+            <form method="post" class="contact-form mt-4">
+                {% csrf_token %}
+                {{ form.name }}
+                {{ form.email }}
+                {{ form.message }}
+                <button type="submit" class="site-btn">Отправить сообщение</button>
+            </form>
+        </div>
+    </section>
+{% endblock %}

@@ -1,10 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+<!-- templates/core/painting_list.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Галерея - Галерея Художника{% endblock %}
+
+{% block content %}
+    <!-- Paintings List Section: Modern grid layout with responsive cards -->
+    <section class="paintings-section py-5">
+        <h2 class="text-center mb-5 section-title">Галерея картин</h2>
+        {% if paintings %}
+            <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+                {% for painting in paintings %}
+                    <div class="col">
+                        <a href="{% url 'painting_detail' painting.slug %}" class="painting-link d-block text-decoration-none">
+                            <div class="painting-card shadow-lg rounded overflow-hidden">
+                                <img src="{{ painting.small_image.url }}" class="img-fluid painting-img" alt="{{ painting.title }}">
+                                <div class="painting-info p-3 text-center">
+                                    <h5 class="painting-title mb-1">{{ painting.title }}</h5>
+                                    <p class="painting-date mb-1 small text-muted">{{ painting.creation_date|date:"Y" }}</p>
+                                    {% if painting.price %}
+                                        <p class="painting-price mb-0 font-weight-bold">{{ painting.price }} руб.</p>
+                                    {% else %}
+                                        <p class="painting-price mb-0 font-weight-bold text-secondary">Не продается</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination if needed -->
+            {% if is_paginated %}
+                <nav aria-label="Pagination" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
+                        {% endif %}
+
+                        {% for i in paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Следующая</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <p class="text-center">Нет картин в галерее на данный момент.</p>
+        {% endif %}
+    </section>
+{% endblock %}

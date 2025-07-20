@@ -1,10 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- templates/core/home.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Главная - Галерея Художника{% endblock %}
+
+{% block extra_css %}
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!-- Artist Section: Modern layout with image left, text right -->
+    <section class="artist-section py-5">
+        <div class="row align-items-center">
+            {% if artist.photo %}
+                <div class="col-md-4">
+                    <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="img-fluid rounded shadow artist-photo">
+                </div>
+            {% endif %}
+            <div class="col-md-8">
+                <h1 class="display-4 artist-name">{{ artist.name }}</h1>
+                <p class="lead artist-bio">{{ artist.bio }}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual separator -->
+    <hr class="my-5 separator">
+
+    <!-- Featured Paintings: Conditional rendering - carousel if >3, static grid if 1-3, message if 0 -->
+    <section class="featured-section py-5">
+        <h2 class="text-center mb-4 section-title">Избранные картины</h2>
+        {% if featured_paintings.exists %}
+            {% if featured_paintings.count > 3 %}
+                <!-- Carousel for >3 paintings -->
+                <div id="featuredCarousel" class="carousel slide carousel-multi-item" data-bs-ride="carousel">
+                    <div class="carousel-inner" role="listbox">
+                        {% for painting in featured_paintings %}
+                            {% if forloop.counter0|divisibleby:3 %}
+                                <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
+                                    <div class="row">
+                            {% endif %}
+                                        <div class="col-md-4">
+                                            <a href="{% url 'painting_detail' painting.slug %}" class="featured-link">
+                                                <img src="{{ painting.medium_image.url }}" class="img-fluid featured-img" alt="{{ painting.title }}">
+                                                <h5 class="featured-title mt-2 text-center">{{ painting.title }}</h5>
+                                            </a>
+                                        </div>
+                            {% if forloop.counter|divisibleby:3 or forloop.last %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <!-- Controls for manual navigation -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            {% else %}
+                <!-- Static grid for 1-3 paintings, no carousel -->
+                <div class="row justify-content-center">
+                    {% for painting in featured_paintings %}
+                        <div class="col-md-4">
+                            <a href="{% url 'painting_detail' painting.slug %}" class="featured-link">
+                                <img src="{{ painting.medium_image.url }}" class="img-fluid featured-img" alt="{{ painting.title }}">
+                                <h5 class="featured-title mt-2 text-center">{{ painting.title }}</h5>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-center">Нет избранных картин на данный момент.</p>
+        {% endif %}
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- Custom JS for carousel: init, auto-slide, and fill last slide with clones for cycling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const featuredCarouselElement = document.querySelector('#featuredCarousel');
+            if (featuredCarouselElement) {
+                // Fill the last slide with clones from the beginning if needed
+                const inner = featuredCarouselElement.querySelector('.carousel-inner');
+                const items = inner.querySelectorAll('.carousel-item');
+                if (items.length > 1) {  // Only if multiple groups
+                    const lastItem = items[items.length - 1];
+                    const lastRow = lastItem.querySelector('.row');
+                    const lastCols = lastRow.querySelectorAll('.col-md-4');
+                    if (lastCols.length < 3) {
+                        const fillCount = 3 - lastCols.length;
+                        const firstItem = items[0];
+                        const firstCols = firstItem.querySelectorAll('.col-md-4');
+                        for (let i = 0; i < fillCount; i++) {
+                            const clone = firstCols[i].cloneNode(true);
+                            lastRow.appendChild(clone);
+                        }
+                    }
+                }
+
+                // Initialize carousel
+                const carousel = new bootstrap.Carousel(featuredCarouselElement, {
+                    interval: 5000,  // Auto-slide every 5 seconds
+                    wrap: true,      // Loop back
+                    touch: true      // Enable touch swipe
+                });
+            }
+        });
+    </script>
+{% endblock %}
