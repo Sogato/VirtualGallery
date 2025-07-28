@@ -74,7 +74,7 @@ class Painting(models.Model):
     title = models.CharField(max_length=200, verbose_name="Название")
     description = models.TextField(blank=True, verbose_name="Описание")
     creation_date = models.DateField(verbose_name="Дата создания")
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Цена")
+    price = models.IntegerField(null=True, blank=True, verbose_name="Цена")
     is_featured = models.BooleanField(default=False, verbose_name="Избранная")
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL-имя")
     image = models.ImageField(upload_to='paintings/original/', verbose_name="Оригинальное изображение")

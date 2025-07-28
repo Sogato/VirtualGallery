@@ -68,7 +68,7 @@ class Command(BaseCommand):
                 title=painting_titles[i],
                 description=descriptions[i],
                 creation_date=date.today() - timedelta(days=random.randint(1, 365*5)),
-                price=random.choice([None, round(random.uniform(1000, 10000))]),
+                price = random.choice([None, random.randint(1000, 10000)]),
                 is_featured=random.choice([True, False])
             )
             # Slug с транслитерацией
