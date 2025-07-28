@@ -529,3 +529,262 @@ img {
     color: #fff;
     background: #7aa046; /* Darker green on hover for effect */
 }
+
+/* External Carousel Controls */
+.carousel-container {
+    position: relative;
+    padding: 0 60px; /* Отступы по бокам для размещения кнопок */
+}
+
+.carousel-external-prev,
+.carousel-external-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.carousel-external-prev:hover,
+.carousel-external-next:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    transform: translateY(-50%) scale(1.1);
+    color: white;
+}
+
+.carousel-external-prev {
+    left: 0;
+}
+
+.carousel-external-next {
+    right: 0;
+}
+
+/* Убираем внутренние контролы карусели для чистого вида */
+.carousel-multi-item .carousel-control-prev,
+.carousel-multi-item .carousel-control-next {
+    display: none;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .carousel-container {
+        padding: 0 40px;
+    }
+
+    .carousel-external-prev,
+    .carousel-external-next {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-container {
+        padding: 0 30px;
+    }
+
+    .carousel-external-prev,
+    .carousel-external-next {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+}
+
+/* FINAL Contacts Page Styles - Fully Consistent with Site Design */
+
+/* Remove old contact styles conflicts */
+.contacts-section {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Contact Social - larger icons, properly centered */
+.contact-social {
+    gap: 15px; /* Space between icons */
+}
+
+.contact-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    color: #fff;
+    border-radius: 50%;
+    background: #007bff;
+    transition: all 0.3s ease;
+    font-size: 36px;
+    text-decoration: none;
+    margin: 0 8px; /* Horizontal spacing */
+}
+
+.contact-social a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+}
+
+/* Platform-specific colors */
+.contact-social a[href*="vk.com"] {
+    background: #4680C2;
+}
+
+.contact-social a[href*="vk.com"]:hover {
+    background: #3d73b0;
+    box-shadow: 0 6px 12px rgba(70, 128, 194, 0.4);
+}
+
+.contact-social a[href*="instagram.com"] {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.contact-social a[href*="instagram.com"]:hover {
+    background: linear-gradient(45deg, #e08322 0%, #d5572b 25%, #cb1632 50%, #bb1555 75%, #ab0777 100%);
+    box-shadow: 0 6px 12px rgba(220, 39, 67, 0.4);
+}
+
+.contact-social a[href*="t.me"] {
+    background: #0088cc;
+}
+
+.contact-social a[href*="t.me"]:hover {
+    background: #0077bb;
+    box-shadow: 0 6px 12px rgba(0, 136, 204, 0.4);
+}
+
+/* Contact Text - consistent with blog text styling */
+.contact-text p {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.contact-text a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-text a:hover {
+    color: #0056b3;
+}
+
+/* Contact Form - fully consistent styling */
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    color: #333;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: #6c757d;
+    font-family: 'Roboto', sans-serif;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+.contact-form textarea {
+    height: 140px;
+    resize: vertical;
+}
+
+/* Site Button - fully consistent with other page buttons */
+.site-btn {
+    display: inline-block;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px 40px;
+    min-width: 220px;
+    color: #fff;
+    background: #007bff;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.site-btn:hover {
+    background: #0056b3;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Contact Warp - consistent container */
+.contact-warp {
+    max-width: 100%;
+    padding: 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .contact-social a {
+        width: 55px;
+        height: 55px;
+        font-size: 22px;
+        margin: 0 6px;
+    }
+
+    .contact-text {
+        margin-bottom: 2rem;
+    }
+
+    .site-btn {
+        min-width: 100%;
+        margin-top: 1rem;
+    }
+
+    .contact-form {
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-social a {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin: 0 5px;
+    }
+}
+
+
+.contact-social a i {
+    transform: translateY(-4px); /* Ручная корректировка вверх на 1-3px, если нужно */
+}
+

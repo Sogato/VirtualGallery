@@ -32,32 +32,34 @@
         <h2 class="text-center mb-4 section-title">Избранные картины</h2>
         {% if featured_paintings.exists %}
             {% if featured_paintings.count > 3 %}
-                <!-- Carousel for >3 paintings -->
-                <div id="featuredCarousel" class="carousel slide carousel-multi-item" data-bs-ride="carousel">
-                    <div class="carousel-inner" role="listbox">
-                        {% for painting in featured_paintings %}
-                            {% if forloop.counter0|divisibleby:3 %}
-                                <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
-                                    <div class="row">
-                            {% endif %}
-                                        <div class="col-md-4">
-                                            <a href="{% url 'painting_detail' painting.slug %}" class="featured-link">
-                                                <img src="{{ painting.medium_image.url }}" class="img-fluid featured-img" alt="{{ painting.title }}">
-                                                <h5 class="featured-title mt-2 text-center">{{ painting.title }}</h5>
-                                            </a>
+                <!-- Carousel for >3 paintings with external controls -->
+                <div class="carousel-container position-relative">
+                    <div id="featuredCarousel" class="carousel slide carousel-multi-item" data-bs-ride="carousel">
+                        <div class="carousel-inner" role="listbox">
+                            {% for painting in featured_paintings %}
+                                {% if forloop.counter0|divisibleby:3 %}
+                                    <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
+                                        <div class="row">
+                                {% endif %}
+                                            <div class="col-md-4">
+                                                <a href="{% url 'painting_detail' painting.slug %}" class="featured-link">
+                                                    <img src="{{ painting.medium_image.url }}" class="img-fluid featured-img" alt="{{ painting.title }}">
+                                                    <h5 class="featured-title mt-2 text-center">{{ painting.title }}</h5>
+                                                </a>
+                                            </div>
+                                {% if forloop.counter|divisibleby:3 or forloop.last %}
                                         </div>
-                            {% if forloop.counter|divisibleby:3 or forloop.last %}
                                     </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
-                    <!-- Controls for manual navigation -->
-                    <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                    <!-- External Controls positioned outside carousel -->
+                    <button class="carousel-control-prev carousel-external-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                    <button class="carousel-control-next carousel-external-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
