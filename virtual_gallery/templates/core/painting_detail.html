@@ -1,0 +1,40 @@
+<!-- templates/core/painting_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ object.title }} - Галерея Художника{% endblock %}
+
+{% block content %}
+    <!-- Painting Detail Section: Modern layout with large image and info side-by-side -->
+    <section class="painting-detail-section py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <img src="{{ object.large_image.url }}" class="img-fluid painting-large-img rounded shadow mb-4" alt="{{ object.title }}" loading="lazy">
+            </div>
+            <div class="col-lg-4">
+                <div class="painting-info sticky-top">
+                    <h1 class="painting-title mb-3">{{ object.title }}</h1>
+                    <p class="painting-description lead mb-4">{{ object.description }}</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>Дата создания:</strong> {{ object.creation_date|date:"d F Y" }}</li>
+                        <li class="mb-2">
+                            <strong>Цена:</strong>
+                            {% if object.price %}
+                                {{ object.price }} руб.
+                            {% else %}
+                                Не продается
+                            {% endif %}
+                        </li>
+                    </ul>
+                    <div class="mt-4">
+                        {% if object.price %}
+                            <a href="{% url 'contacts' %}?painting={{ object.slug }}" class="btn btn-primary btn-lg w-100 mb-2">Купить</a>
+                        {% else %}
+                            <a href="{% url 'contacts' %}?painting={{ object.slug }}" class="btn btn-outline-primary btn-lg w-100 mb-2">Связаться по поводу картины</a>
+                        {% endif %}
+                        <a href="{% url 'painting_list' %}" class="btn btn-secondary btn-lg w-100">Назад в галерею</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
