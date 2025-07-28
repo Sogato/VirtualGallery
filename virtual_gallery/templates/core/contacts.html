@@ -1,10 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- templates/core/contacts.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Контакты - Галерея Художника{% endblock %}
+
+{% block extra_css %}
+    <!-- Google Fonts for consistency with home page -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <!-- Font Awesome for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+    <!-- Contacts Section: Consistent with site styling -->
+    <section class="contacts-section py-5">
+        <!-- Centered title like other pages -->
+        <h2 class="text-center mb-5 section-title">Контакты</h2>
+
+        <div class="contact-warp mx-auto">
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center mb-4">
+                    <!-- Social icons with Russian platforms - centered -->
+                    <div class="contact-social mb-4 d-flex justify-content-center">
+                        <a href="https://vk.com/artist_username" target="_blank" title="VK">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://www.instagram.com/artist_username" target="_blank" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://t.me/artist_username" target="_blank" title="Telegram">
+                            <i class="fab fa-telegram-plane"></i>
+                        </a>
+                    </div>
+
+                    <!-- Contact info centered -->
+                    <div class="contact-text">
+                        {% if site_contact %}
+                            {% if site_contact.phone %}
+                                <p>Телефон: {{ site_contact.phone }}</p>
+                            {% endif %}
+                            {% if site_contact.email %}
+                                <p>Email: <a href="mailto:{{ site_contact.email }}">{{ site_contact.email }}</a></p>
+                            {% endif %}
+                        {% else %}
+                            <p>Контактная информация не указана.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form with consistent styling -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form method="post" class="contact-form mt-4">
+                        {% csrf_token %}
+                        {{ form.name }}
+                        {{ form.email }}
+                        {{ form.message }}
+                        <div class="text-center">
+                            <button type="submit" class="site-btn">Отправить сообщение</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

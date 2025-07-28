@@ -1,10 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- templates/core/blog_list.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Блог - Галерея Художника{% endblock %}
+
+{% block content %}
+    <!-- Blog List Section: Feed-style vertical list with floating images -->
+    <section class="blog-section py-5">
+        <h2 class="text-center mb-5 section-title">Блог</h2>
+        {% if posts %}
+            {% for post in posts %}
+                <article class="blog-post mb-5 p-4 bg-white rounded shadow-lg">
+                    <h3 class="blog-title mb-3">{{ post.title }}</h3>
+                    <p class="small text-muted mb-3">{{ post.pub_date|date:"d F Y" }}</p>
+                    <div class="blog-content">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" class="blog-img float-start me-3 mb-3" alt="{{ post.title }}">
+                        {% endif %}
+                        <p>{{ post.content }}</p> <!-- Full content; truncate if too long, but showing full as no detail view -->
+                    </div>
+                </article>
+            {% endfor %}
+
+            <!-- Pagination if needed -->
+            {% if is_paginated %}
+                <nav aria-label="Pagination" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
+                        {% endif %}
+
+                        {% for i in paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Следующая</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <p class="text-center">Нет постов в блоге на данный момент.</p>
+        {% endif %}
+    </section>
+{% endblock %}
