@@ -1,67 +1,171 @@
 <!-- templates/core/contacts.html -->
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Контакты - Галерея Художника{% endblock %}
 
 {% block extra_css %}
-    <!-- Google Fonts for consistency with home page -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <!-- Font Awesome for social icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block content %}
-    <!-- Contacts Section: Consistent with site styling -->
-    <section class="contacts-section py-5">
-        <!-- Centered title like other pages -->
-        <h2 class="text-center mb-5 section-title">Контакты</h2>
-
-        <div class="contact-warp mx-auto">
-            <div class="row justify-content-center">
-                <div class="col-md-8 text-center mb-4">
-                    <!-- Social icons with Russian platforms - centered -->
-                    <div class="contact-social mb-4 d-flex justify-content-center">
-                        <a href="https://vk.com/artist_username" target="_blank" title="VK">
-                            <i class="fab fa-vk"></i>
-                        </a>
-                        <a href="https://www.instagram.com/artist_username" target="_blank" title="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://t.me/artist_username" target="_blank" title="Telegram">
-                            <i class="fab fa-telegram-plane"></i>
-                        </a>
-                    </div>
-
-                    <!-- Contact info centered -->
-                    <div class="contact-text">
-                        {% if site_contact %}
-                            {% if site_contact.phone %}
-                                <p>Телефон: {{ site_contact.phone }}</p>
-                            {% endif %}
-                            {% if site_contact.email %}
-                                <p>Email: <a href="mailto:{{ site_contact.email }}">{{ site_contact.email }}</a></p>
-                            {% endif %}
-                        {% else %}
-                            <p>Контактная информация не указана.</p>
-                        {% endif %}
-                    </div>
-                </div>
+    <!-- Contacts Hero Section -->
+    <section class="contacts-hero">
+        <div class="container">
+            <div class="contacts-hero-content" data-aos>
+                <h1 class="contacts-page-title">Свяжитесь со мной</h1>
+                <p class="contacts-page-subtitle">Буду рада ответить на ваши вопросы</p>
             </div>
+        </div>
+    </section>
 
-            <!-- Form with consistent styling -->
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <form method="post" class="contact-form mt-4">
-                        {% csrf_token %}
-                        {{ form.name }}
-                        {{ form.email }}
-                        {{ form.message }}
-                        <div class="text-center">
-                            <button type="submit" class="site-btn">Отправить сообщение</button>
+    <!-- Contacts Content Section -->
+    <section class="contacts-content-section">
+        <div class="container">
+            <div class="contacts-wrapper">
+                <div class="row g-5">
+                    <!-- Contact Info Column -->
+                    <div class="col-lg-5">
+                        <div class="contact-info-block" data-aos="fade-right">
+                            <h2 class="contact-block-title">Контактная информация</h2>
+
+                            {% if site_contact %}
+                                <div class="contact-details">
+                                    {% if site_contact.phone %}
+                                        <div class="contact-item">
+                                            <div class="contact-icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </div>
+                                            <div class="contact-text">
+                                                <span class="contact-label">Телефон</span>
+                                                <a href="tel:{{ site_contact.phone }}" class="contact-value">{{ site_contact.phone }}</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if site_contact.email %}
+                                        <div class="contact-item">
+                                            <div class="contact-icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </div>
+                                            <div class="contact-text">
+                                                <span class="contact-label">Email</span>
+                                                <a href="mailto:{{ site_contact.email }}" class="contact-value">{{ site_contact.email }}</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <p class="no-contact-info">Контактная информация скоро будет добавлена</p>
+                            {% endif %}
+
+                            <!-- Social Links -->
+                            <div class="social-section">
+                                <h3 class="social-title">Социальные сети</h3>
+                                <div class="social-links">
+                                    <a href="#" target="_blank" class="social-link vk" title="VKontakte">
+                                        <i class="fab fa-vk"></i>
+                                    </a>
+                                    <a href="#" target="_blank" class="social-link instagram" title="Instagram">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#" target="_blank" class="social-link telegram" title="Telegram">
+                                        <i class="fab fa-telegram-plane"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </form>
+                    </div>
+
+                    <!-- Contact Form Column -->
+                    <div class="col-lg-7">
+                        <div class="contact-form-block" data-aos="fade-left">
+                            <h2 class="contact-block-title">Написать сообщение</h2>
+                            <p class="form-subtitle">Заполните форму, и я свяжусь с вами в ближайшее врем</p>
+
+                            <form method="post" class="modern-contact-form">
+                                {% csrf_token %}
+
+                                <div class="form-group">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label-custom">Ваше имя</label>
+                                    {{ form.name|add_class:"form-control-custom" }}
+                                    {% if form.name.errors %}
+                                        <div class="form-error">{{ form.name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label-custom">Email</label>
+                                    {{ form.email|add_class:"form-control-custom" }}
+                                    {% if form.email.errors %}
+                                        <div class="form-error">{{ form.email.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.message.id_for_label }}" class="form-label-custom">Сообщение</label>
+                                    {{ form.message|add_class:"form-control-custom form-textarea" }}
+                                    {% if form.message.errors %}
+                                        <div class="form-error">{{ form.message.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-submit">
+                                    <span>Отправить сообщение</span>
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M19 10L2 2L6 10L2 18L19 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </form>
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-custom mt-4" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Quote Section -->
+    <section class="contact-quote-section">
+        <div class="container">
+            <div class="quote-block">
+                <div class="quote-decoration">
+                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" opacity="0.1">
+                        <path d="M25 20C25 13.3726 19.6274 8 13 8C6.37258 8 1 13.3726 1 20C1 26.6274 6.37258 32 13 32C13.6636 32 14.3136 31.9398 14.9444 31.8242C14.3358 34.0679 12.6999 36.9607 9.65641 40.1262C6.23675 43.6807 1.04919 47.591 -6 52L-4 56C3.78253 51.2437 10.2654 46.7858 14.6048 42.5596C19.2333 38.0522 21.5 33.7487 21.5 29.5C21.5 29.3325 21.4963 29.1658 21.489 29C23.6111 26.5706 25 23.4334 25 20Z" fill="currentColor"/>
+                        <path d="M59 20C59 13.3726 53.6274 8 47 8C40.3726 8 35 13.3726 35 20C35 26.6274 40.3726 32 47 32C47.6636 32 48.3136 31.9398 48.9444 31.8242C48.3358 34.0679 46.6999 36.9607 43.6564 40.1262C40.2368 43.6807 35.0492 47.591 28 52L30 56C37.7825 51.2437 44.2654 46.7858 48.6048 42.5596C53.2333 38.0522 55.5 33.7487 55.5 29.5C55.5 29.3325 55.4963 29.1658 55.489 29C57.6111 26.5706 59 23.4334 59 20Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <p class="quote-text">Искусство — это диалог между художником и зрителем</p>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Form validation enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.modern-contact-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('.btn-submit');
+                    submitBtn.innerHTML = '<span>Отправка...</span>';
+                    submitBtn.disabled = true;
+                });
+            }
+        });
+    </script>
 {% endblock %}

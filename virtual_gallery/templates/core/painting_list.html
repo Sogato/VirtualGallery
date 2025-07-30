@@ -6,10 +6,20 @@
 {% block content %}
     <!-- Gallery Hero Section -->
     <section class="gallery-hero">
+        <div class="hero-background">
+            <div class="hero-pattern"></div>
+        </div>
         <div class="container">
             <div class="gallery-hero-content">
                 <h1 class="gallery-title" data-aos>Галерея работ</h1>
                 <p class="gallery-subtitle" data-aos>Исследуйте коллекцию произведений</p>
+                <div class="hero-decoration" data-aos>
+                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                        <rect x="10" y="10" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+                        <rect x="5" y="5" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+                        <rect x="15" y="15" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                </div>
             </div>
         </div>
     </section>
@@ -42,13 +52,15 @@
                                     </div>
                                     <div class="painting-details">
                                         <h3 class="painting-name">{{ painting.title }}</h3>
-                                        <div class="painting-meta-info">
-                                            <span class="painting-year">{{ painting.creation_date|date:"Y" }}</span>
-                                            <span class="meta-separator">•</span>
+                                        <div class="painting-info-row">
+                                            <span class="painting-year">{{ painting.creation_date|date:"Y" }} год</span>
+                                        </div>
+                                        <div class="painting-price-row">
                                             {% if painting.price %}
-                                                <span class="painting-price">{{ painting.price|floatformat:0 }} ₽</span>
+                                                <span class="price-label-list">Цена:</span>
+                                                <span class="price-value">{{ painting.price|floatformat:0 }} ₽</span>
                                             {% else %}
-                                                <span class="painting-status">Не продается</span>
+                                                <span class="not-for-sale">Не продается</span>
                                             {% endif %}
                                         </div>
                                     </div>
