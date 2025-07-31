@@ -4,51 +4,71 @@
 {% block title %}Блог - Галерея Художника{% endblock %}
 
 {% block content %}
+    <!-- Blog Hero Section -->
+    <section class="blog-hero">
+        <div class="container">
+            <div class="blog-hero-content" data-aos>
+                <h1 class="blog-page-title">Блог художника</h1>
+                <p class="blog-page-subtitle">Мысли, процессы и вдохновение</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Blog List Section: Feed-style vertical list with floating images -->
     <section class="blog-section py-5">
-        <h2 class="text-center mb-5 section-title">Блог</h2>
-        {% if posts %}
-            {% for post in posts %}
-                <article class="blog-post mb-5 p-4 bg-white rounded shadow-lg">
-                    <h3 class="blog-title mb-3">{{ post.title }}</h3>
-                    <p class="small text-muted mb-3">{{ post.pub_date|date:"d F Y" }}</p>
-                    <div class="blog-content">
-                        {% if post.image %}
-                            <img src="{{ post.image.url }}" class="blog-img float-start me-3 mb-3" alt="{{ post.title }}">
-                        {% endif %}
-                        <p>{{ post.content }}</p> <!-- Full content; truncate if too long, but showing full as no detail view -->
-                    </div>
-                </article>
-            {% endfor %}
-
-            <!-- Pagination if needed -->
-            {% if is_paginated %}
-                <nav aria-label="Pagination" class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
-                        {% endif %}
-
-                        {% for i in paginator.page_range %}
-                            {% if page_obj.number == i %}
-                                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+        <div class="container">
+            {% if posts %}
+                {% for post in posts %}
+                    <article class="blog-post mb-5 p-4 bg-white rounded shadow-lg" data-aos>
+                        <h3 class="blog-title mb-3">{{ post.title }}</h3>
+                        <p class="small text-muted mb-3">{{ post.pub_date|date:"d F Y" }}</p>
+                        <div class="blog-content">
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" class="blog-img float-start me-3 mb-3" alt="{{ post.title }}">
                             {% endif %}
-                        {% endfor %}
+                            <p>{{ post.content }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
 
-                        {% if page_obj.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">Следующая</span></li>
-                        {% endif %}
-                    </ul>
-                </nav>
+                <!-- Modern Pagination -->
+                {% if is_paginated %}
+                    <nav class="blog-pagination-wrapper" aria-label="Навигация по блогу">
+                        <div class="blog-pagination">
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}"
+                                   class="blog-page-link prev">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>Предыдущие</span>
+                                </a>
+                            {% endif %}
+
+                            <div class="blog-page-info">
+                                <span class="current-page">{{ page_obj.number }}</span>
+                                <span class="page-divider">/</span>
+                                <span class="total-pages">{{ paginator.num_pages }}</span>
+                            </div>
+
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}"
+                                   class="blog-page-link next">
+                                    <span>Следующие</span>
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="empty-blog-state text-center py-5">
+                    <p class="empty-blog-message">Нет постов в блоге на данный момент.</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">На главную</a>
+                </div>
             {% endif %}
-        {% else %}
-            <p class="text-center">Нет постов в блоге на данный момент.</p>
-        {% endif %}
+        </div>
     </section>
 {% endblock %}
