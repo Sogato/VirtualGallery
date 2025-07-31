@@ -33,6 +33,14 @@
                         <div class="painting-item" data-aos>
                             <a href="{% url 'painting_detail' painting.slug %}" class="painting-card-link">
                                 <div class="painting-card gallery-card">
+                                    {% if painting.is_featured %}
+                                        <div class="featured-badge">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M8 1L10.163 5.366L15 6.089L11.5 9.495L12.326 14.31L8 12.039L3.674 14.31L4.5 9.495L1 6.089L5.837 5.366L8 1Z" fill="currentColor"/>
+                                            </svg>
+                                            <span>Избранное</span>
+                                        </div>
+                                    {% endif %}
                                     <div class="painting-image-wrapper">
                                         <img src="{{ painting.small_image.url }}"
                                              class="painting-image"
