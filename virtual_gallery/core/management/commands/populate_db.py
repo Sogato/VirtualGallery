@@ -2,7 +2,7 @@ import random
 from datetime import date, timedelta
 from django.core.management.base import BaseCommand
 from django.core.files import File
-from core.models import Artist, Painting, BlogPost, SiteContact, ContactRequest
+from core.models import Artist, Painting, BlogPost, SiteContact, ContactRequest, BlogPostImage
 from django.utils.text import slugify
 from unidecode import unidecode  # Для правильной транслитерации русского в slugs
 import os
@@ -64,11 +64,13 @@ class Command(BaseCommand):
         image_path = os.path.join('media', 'sample_images', 'painting_image')  # Без расширения
 
         for i in range(14):
+            price_choice = random.choice([None, 'price'])
+            price = None if price_choice is None else random.randrange(2000, 10001, 100)
             painting = Painting(
                 title=painting_titles[i],
                 description=descriptions[i],
                 creation_date=date.today() - timedelta(days=random.randint(1, 365*5)),
-                price = random.choice([None, random.randint(1000, 10000)]),
+                price=price,
                 is_featured=random.choice([True, False])
             )
             # Slug с транслитерацией
@@ -91,8 +93,7 @@ class Command(BaseCommand):
             'Советы начинающим художникам',
             'Новые техники в пейзажной живописи',
             'История моей первой картины',
-            'Вдохновение от природы Сибири',
-            'Анализ работ великих мастеров'
+            'Вдохновение от природы Сибири'
         ]
         contents = [
             'В Италии я вдохновился ренессансом. Посетил Флоренцию и Рим, нарисовал несколько эскизов.',
@@ -101,8 +102,7 @@ class Command(BaseCommand):
             'Начинайте с базовых навыков, практикуйтесь ежедневно, изучайте мастеров.',
             'Пробую новые кисти и текстуры для пейзажей. Результаты впечатляют.',
             'Моя первая картина была нарисована в детстве, это был простой пейзаж.',
-            'Сибирская природа - бесконечный источник идей для моих работ.',
-            'Изучаю технику Ван Гога и Моне, применяю в своих картинах.'
+            'Сибирская природа - бесконечный источник идей для моих работ.'
         ]
         blog_image_path = os.path.join('media', 'sample_images', 'blog_image')  # Без расширения
 
@@ -113,15 +113,51 @@ class Command(BaseCommand):
             )
             # Slug с транслитерацией
             post.slug = slugify(unidecode(post.title))
-            for ext in ['.webp', '.jpg', '.png']:  # Проверяем возможные расширения
-                full_path = blog_image_path + ext
-                if os.path.exists(full_path):
-                    post.image = File(open(full_path, 'rb'), name=f'blog_image_{i}{ext}')
-                    break
-            else:
-                self.stdout.write(self.style.WARNING('Blog image not found in media/sample_images/blog_image (any format)'))
-            post.save()  # Вызываем save модели для обработки
-        self.stdout.write(self.style.SUCCESS('Created 7 BlogPosts'))
+
+            # Детерминированное распределение сценариев изображений
+            if i in [0, 1]:  # Посты без изображений
+                post.save()
+            else:  # Посты с обложкой + доп. изображениями
+                image_added = False
+                for ext in ['.webp', '.jpg', '.png']:
+                    full_path = blog_image_path + ext
+                    if os.path.exists(full_path):
+                        post.cover_image = File(open(full_path, 'rb'), name=f'blog_cover_{i}{ext}')
+                        image_added = True
+                        break
+                if not image_added:
+                    self.stdout.write(self.style.WARNING(f'Blog cover image not found for post {post.title}. Creating without images.'))
+                    post.save()
+                    continue
+
+                post.save()  # Сохраняем пост с обложкой
+
+                # Добавляем доп. изображения в зависимости от i
+                if i == 2 or i == 3:  # Только обложка (0 доп.)
+                    pass
+                elif i == 4:  # 1 доп. (всего 2)
+                    num_extra = 1
+                elif i == 5:  # 2 доп. (всего 3)
+                    num_extra = 2
+                elif i == 6:  # 4 доп. (всего 5)
+                    num_extra = 4
+
+                if 'num_extra' in locals():
+                    for j in range(num_extra):
+                        extra_image = BlogPostImage(post=post)
+                        extra_image_added = False
+                        for ext in ['.webp', '.jpg', '.png']:
+                            full_path = blog_image_path + ext
+                            if os.path.exists(full_path):
+                                extra_image.image = File(open(full_path, 'rb'), name=f'blog_extra_{i}_{j}{ext}')
+                                extra_image_added = True
+                                break
+                        if extra_image_added:
+                            extra_image.save()  # Вызываем save для обработки
+                        else:
+                            self.stdout.write(self.style.WARNING(f'Extra blog image not found for post {post.title}'))
+
+        self.stdout.write(self.style.SUCCESS('Created 7 BlogPosts with various image scenarios'))
 
         # ContactRequests (4 тестовые)
         names = ['Алексей', 'Мария', 'Дмитрий', 'Елена']

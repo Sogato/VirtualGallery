@@ -1,6 +1,30 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Artist, Painting, BlogPost, ContactRequest, SiteContact
+from django.core.exceptions import ValidationError
+from django import forms
+from .models import Artist, Painting, BlogPost, ContactRequest, SiteContact, BlogPostImage
+
+
+class BlogPostImageInlineFormSet(forms.BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        if any(self.errors):
+            return
+        has_extra_images = False
+        for form in self.forms:
+            if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                has_extra_images = True
+                break
+        if has_extra_images and not self.instance.cover_image:
+            raise ValidationError("Добавьте обложку поста, если есть дополнительные изображения.")
+
+
+class BlogPostImageInline(admin.TabularInline):
+    model = BlogPostImage
+    extra = 0
+    fields = ('image',)
+    max_num = 5
+    formset = BlogPostImageInlineFormSet
 
 
 @admin.register(Artist)
@@ -65,7 +89,8 @@ class BlogPostAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
     date_hierarchy = 'pub_date'
-    fields = ('title', 'slug', 'content', 'image')
+    fields = ('title', 'slug', 'content', 'cover_image')
+    inlines = [BlogPostImageInline]
 
     def content_preview(self, obj):
         return obj.content[:50] + '...' if obj.content else ''
@@ -75,6 +100,9 @@ class BlogPostAdmin(admin.ModelAdmin):
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             obj.delete()
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(ContactRequest)

@@ -23,8 +23,40 @@
                         <h3 class="blog-title mb-3">{{ post.title }}</h3>
                         <p class="small text-muted mb-3">{{ post.pub_date|date:"d F Y" }}</p>
                         <div class="blog-content">
-                            {% if post.image %}
-                                <img src="{{ post.image.url }}" class="blog-img float-start me-3 mb-3" alt="{{ post.title }}">
+                            {% if post.cover_image or post.images.exists %}
+                                <div class="blog-image-slider float-start me-3 mb-3">
+                                    <div class="slider-container">
+                                        <div class="slider-wrapper">
+                                            {% if post.cover_image %}
+                                                <img src="{{ post.cover_image.url }}"
+                                                     class="slider-image active"
+                                                     alt="{{ post.title }}"
+                                                     data-index="0">
+                                            {% endif %}
+                                            {% for image in post.images.all %}
+                                                <img src="{{ image.image.url }}"
+                                                     class="slider-image {% if not post.cover_image and forloop.first %}active{% endif %}"
+                                                     alt="{{ post.title }} - изображение {{ forloop.counter }}"
+                                                     data-index="{% if post.cover_image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}">
+                                            {% endfor %}
+                                        </div>
+
+                                        {% if post.cover_image and post.images.exists or post.images.count > 1 %}
+                                            <div class="slider-indicators">
+                                                {% if post.cover_image %}
+                                                    <button class="indicator active"
+                                                            data-target="0"
+                                                            aria-label="Показать изображение 1"></button>
+                                                {% endif %}
+                                                {% for image in post.images.all %}
+                                                    <button class="indicator {% if not post.cover_image and forloop.first %}active{% endif %}"
+                                                            data-target="{% if post.cover_image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}"
+                                                            aria-label="Показать изображение {% if post.cover_image %}{{ forloop.counter|add:1 }}{% else %}{{ forloop.counter }}{% endif %}"></button>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             {% endif %}
                             <p>{{ post.content }}</p>
                         </div>
@@ -71,4 +103,36 @@
             {% endif %}
         </div>
     </section>
+
+    <script>
+        // Инициализация слайдеров после загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            const sliders = document.querySelectorAll('.blog-image-slider');
+
+            sliders.forEach(slider => {
+                const indicators = slider.querySelectorAll('.indicator');
+                const images = slider.querySelectorAll('.slider-image');
+
+                indicators.forEach(indicator => {
+                    indicator.addEventListener('click', function() {
+                        const targetIndex = this.getAttribute('data-target');
+
+                        // Скрываем все изображения
+                        images.forEach(img => img.classList.remove('active'));
+                        // Убираем активный класс со всех индикаторов
+                        indicators.forEach(ind => ind.classList.remove('active'));
+
+                        // Показываем нужное изображение
+                        const targetImage = slider.querySelector(`.slider-image[data-index="${targetIndex}"]`);
+                        if (targetImage) {
+                            targetImage.classList.add('active');
+                        }
+
+                        // Делаем индикатор активным
+                        this.classList.add('active');
+                    });
+                });
+            });
+        });
+    </script>
 {% endblock %}

@@ -29,6 +29,9 @@ class BlogListView(ListView):
     context_object_name = 'posts'
     ordering = '-pub_date'
 
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('images')
+
 class ContactsView(FormView):
     template_name = 'core/contacts.html'
     form_class = ContactForm
