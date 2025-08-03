@@ -35,7 +35,7 @@ class Artist(models.Model):
 
     class Meta:
         verbose_name = "Художник"
-        verbose_name_plural = "Художники"
+        verbose_name_plural = "Художник"
 
     def __str__(self):
         return self.name
@@ -222,6 +222,7 @@ class BlogPost(models.Model):
             except Exception as e:
                 print(f"Ошибка при удалении файла {path}: {e}")
 
+
 class BlogPostImage(models.Model):
     post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='images', verbose_name="Пост")
     image = models.ImageField(upload_to='blog/images/', null=True, blank=True, verbose_name="Изображение")
@@ -282,8 +283,8 @@ class SiteContact(models.Model):
     email = models.EmailField(blank=True, verbose_name="E-mail")
 
     class Meta:
-        verbose_name = "Контактная информация сайта"
-        verbose_name_plural = "Контактная информация сайта"
+        verbose_name = "Контактная информация"
+        verbose_name_plural = "Контактная информация"
 
     def __str__(self):
         return "Контакты сайта"

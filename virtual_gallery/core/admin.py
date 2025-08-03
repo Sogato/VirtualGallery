@@ -95,7 +95,7 @@ class BlogPostAdmin(admin.ModelAdmin):
     def content_preview(self, obj):
         return obj.content[:50] + '...' if obj.content else ''
 
-    content_preview.short_description = "Превью содержания"
+    content_preview.short_description = "Содержание"
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
@@ -117,7 +117,7 @@ class ContactRequestAdmin(admin.ModelAdmin):
     def message_preview(self, obj):
         return obj.message[:50] + '...' if obj.message else ''
 
-    message_preview.short_description = "Превью сообщения"
+    message_preview.short_description = "Сообщение"
 
     def has_add_permission(self, request):
         # Запретить добавление новых заявок в админке

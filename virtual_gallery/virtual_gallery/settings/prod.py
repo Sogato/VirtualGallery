@@ -2,7 +2,7 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['твой_домен.com', 'www.твой_домен.com']  # Замени на реальный домен
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')  # Замени на реальный домен
 
 # Database (PostgreSQL для prod, данные строго из .env)
 DATABASES = {
@@ -11,7 +11,7 @@ DATABASES = {
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
@@ -21,8 +21,11 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_SECONDS = 31536000  # 1 год
+SECURE_HSTS_PRELOAD = True
 X_FRAME_OPTIONS = 'DENY'
 
-# Static и media в prod (если используешь nginx или S3, настрой соответственно)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Static и media в prod (Nginx сервирует, Django только collectstatic)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

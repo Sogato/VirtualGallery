@@ -9,13 +9,14 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['artist'] = Artist.objects.first()  # Единственный художник
-        context['featured_paintings'] = Painting.objects.filter(is_featured=True)
+        context['featured_paintings'] = Painting.objects.filter(is_featured=True).order_by('-creation_date')
         return context
 
 class PaintingListView(ListView):
     model = Painting
     template_name = 'core/painting_list.html'
     context_object_name = 'paintings'
+    ordering = ['-creation_date']  # Новые картины сначала
 
 class PaintingDetailView(DetailView):
     model = Painting

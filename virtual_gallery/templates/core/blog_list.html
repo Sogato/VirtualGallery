@@ -115,11 +115,16 @@
                 const indicators = slider.querySelectorAll('.indicator');
                 const images = slider.querySelectorAll('.slider-image');
                 const sliderContainer = slider.querySelector('.slider-container');
+                const sliderWrapper = slider.querySelector('.slider-wrapper');
 
                 // Touch swipe functionality
                 let touchStartX = 0;
                 let touchEndX = 0;
                 let currentIndex = 0;
+
+                // Mouse hover functionality for desktop
+                let mouseX = 0;
+                let isMouseOverImage = false;
 
                 function switchToImage(index) {
                     images.forEach(img => img.classList.remove('active'));
@@ -136,10 +141,35 @@
 
                 // Click handlers for indicators
                 indicators.forEach((indicator, index) => {
-                    indicator.addEventListener('click', function() {
+                    indicator.addEventListener('click', function(e) {
+                        e.stopPropagation();
                         switchToImage(index);
                     });
                 });
+
+                // Mouse movement over image for desktop switching
+                if (images.length > 1 && window.innerWidth > 768) {
+                    sliderWrapper.addEventListener('mouseenter', function() {
+                        isMouseOverImage = true;
+                    });
+
+                    sliderWrapper.addEventListener('mouseleave', function() {
+                        isMouseOverImage = false;
+                    });
+
+                    sliderWrapper.addEventListener('mousemove', function(e) {
+                        if (!isMouseOverImage) return;
+
+                        const rect = sliderWrapper.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const percentage = x / rect.width;
+                        const targetIndex = Math.floor(percentage * images.length);
+
+                        if (targetIndex !== currentIndex && targetIndex >= 0 && targetIndex < images.length) {
+                            switchToImage(targetIndex);
+                        }
+                    });
+                }
 
                 // Touch events for swipe
                 if ('ontouchstart' in window) {
