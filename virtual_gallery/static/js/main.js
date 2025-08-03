@@ -117,16 +117,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== CAROUSEL ENHANCEMENTS =====
     const featuredCarousel = document.querySelector('#featuredCarousel');
     if (featuredCarousel) {
-        // Pause carousel on hover
-        featuredCarousel.addEventListener('mouseenter', function() {
-            const carousel = bootstrap.Carousel.getInstance(this);
-            if (carousel) carousel.pause();
-        });
+        // Pause carousel on hover (desktop only)
+        if (window.innerWidth > 768) {
+            featuredCarousel.addEventListener('mouseenter', function() {
+                const carousel = bootstrap.Carousel.getInstance(this);
+                if (carousel) carousel.pause();
+            });
 
-        featuredCarousel.addEventListener('mouseleave', function() {
-            const carousel = bootstrap.Carousel.getInstance(this);
-            if (carousel) carousel.cycle();
-        });
+            featuredCarousel.addEventListener('mouseleave', function() {
+                const carousel = bootstrap.Carousel.getInstance(this);
+                if (carousel) carousel.cycle();
+            });
+        }
 
         // Keyboard navigation
         document.addEventListener('keydown', function(e) {
@@ -167,16 +169,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== ANIMATION ON SCROLL =====
+    // ===== ANIMATION ON SCROLL - IMPROVED =====
     const animateOnScroll = () => {
         const elements = document.querySelectorAll('[data-aos]');
+
+        // Adjust trigger point based on device
+        const isMobile = window.innerWidth < 768;
+        const triggerPoint = isMobile ? 50 : 100; // Trigger animations earlier on mobile
 
         elements.forEach(element => {
             const elementTop = element.getBoundingClientRect().top;
             const elementBottom = element.getBoundingClientRect().bottom;
-            const isVisible = (elementTop < window.innerHeight - 100) && (elementBottom > 0);
+            const isVisible = (elementTop < window.innerHeight - triggerPoint) && (elementBottom > 0);
 
-            if (isVisible) {
+            if (isVisible && !element.classList.contains('aos-animate')) {
                 element.classList.add('aos-animate');
             }
         });
@@ -184,7 +190,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check on scroll and load
     window.addEventListener('scroll', animateOnScroll);
-    animateOnScroll();
+    window.addEventListener('resize', animateOnScroll);
+
+    // Initial check with delay to ensure content is loaded
+    setTimeout(animateOnScroll, 100);
 
     // ===== FORM VALIDATION ENHANCEMENT =====
     const forms = document.querySelectorAll('.needs-validation');
@@ -218,6 +227,18 @@ document.addEventListener('DOMContentLoaded', function() {
             top: 0,
             behavior: 'smooth'
         });
+    });
+
+    // ===== RESPONSIVE HELPERS =====
+    // Update carousel on window resize
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            // Rebuild carousel if needed
+            const event = new Event('resize-carousel');
+            document.dispatchEvent(event);
+        }, 250);
     });
 
     console.log('Gallery site initialized');
