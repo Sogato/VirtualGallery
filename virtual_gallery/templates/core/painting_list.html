@@ -65,8 +65,10 @@
                                         </div>
                                         <div class="painting-price-row">
                                             {% if painting.price %}
-                                                <span class="price-label-list">Цена:</span>
-                                                <span class="price-value">{{ painting.price|floatformat:0 }} ₽</span>
+                                                <div class="price-wrapper">
+                                                    <span class="price-label-list">Цена:</span>
+                                                    <span class="price-value">{{ painting.price|floatformat:0 }} ₽</span>
+                                                </div>
                                             {% else %}
                                                 <span class="not-for-sale">Не продается</span>
                                             {% endif %}
@@ -88,7 +90,7 @@
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                             <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
-                                        <span>Назад</span>
+                                        <span class="page-link-text">Назад</span>
                                     </a>
                                 </li>
                             {% endif %}
@@ -97,8 +99,10 @@
                                 {% for i in paginator.page_range %}
                                     {% if page_obj.number == i %}
                                         <span class="page-number active">{{ i }}</span>
-                                    {% else %}
+                                    {% elif i == 1 or i == paginator.num_pages or i >= page_obj.number|add:"-2" and i <= page_obj.number|add:"2" %}
                                         <a class="page-number" href="?page={{ i }}">{{ i }}</a>
+                                    {% elif i == page_obj.number|add:"-3" or i == page_obj.number|add:"3" %}
+                                        <span class="page-ellipsis">...</span>
                                     {% endif %}
                                 {% endfor %}
                             </li>
@@ -106,7 +110,7 @@
                             {% if page_obj.has_next %}
                                 <li class="page-item">
                                     <a class="page-link next" href="?page={{ page_obj.next_page_number }}">
-                                        <span>Вперед</span>
+                                        <span class="page-link-text">Вперед</span>
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                             <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
@@ -135,10 +139,48 @@
 
 {% block extra_js %}
     <script>
-        // Filter functionality (for future enhancement)
+        // Improved animation trigger
         document.addEventListener('DOMContentLoaded', function() {
-            // Add any gallery-specific JavaScript here
-            console.log('Gallery page loaded');
+            // Get all painting items
+            const paintingItems = document.querySelectorAll('.painting-item');
+
+            // Create intersection observer with better settings
+            const observerOptions = {
+                root: null,
+                rootMargin: '100px 0px', // Start animation 100px before element is visible
+                threshold: 0.1 // Trigger when 10% of element is visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // Add staggered delay for smooth cascade effect
+                        setTimeout(() => {
+                            entry.target.classList.add('aos-animate');
+                        }, index * 50); // 50ms delay between each item
+
+                        // Stop observing once animated
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all painting items
+            paintingItems.forEach(item => {
+                observer.observe(item);
+            });
+
+            // Also handle any items already in viewport on load
+            setTimeout(() => {
+                paintingItems.forEach((item, index) => {
+                    const rect = item.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        setTimeout(() => {
+                            item.classList.add('aos-animate');
+                        }, index * 50);
+                    }
+                });
+            }, 100);
         });
     </script>
 {% endblock %}

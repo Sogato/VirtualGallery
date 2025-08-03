@@ -176,7 +176,7 @@ class BlogPost(models.Model):
     content = models.TextField(verbose_name="Содержание")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL-имя")
-    image = models.ImageField(upload_to='blog/', null=True, blank=True, verbose_name="Изображение для поста")
+    cover_image = models.ImageField(upload_to='blog/covers/', null=True, blank=True, verbose_name="Обложка поста")
 
     class Meta:
         verbose_name = "Пост в блоге"
@@ -194,11 +194,51 @@ class BlogPost(models.Model):
                 self.slug = f"{original_slug}-{counter}"
                 counter += 1
 
+        if self.cover_image:
+            # Открываем загруженное изображение
+            img = Image.open(self.cover_image)
+            try:
+                # Resize без crop, max 800 width, preserve aspect
+                if img.width > 800:
+                    ratio = 800 / img.width
+                    new_height = int(img.height * ratio)
+                    img = img.resize((800, new_height), Image.LANCZOS)
+                # Сохраняем в WEBP и перезаписываем cover_image
+                io = BytesIO()
+                img.save(io, format='WEBP', quality=85)
+                name = os.path.splitext(os.path.basename(self.cover_image.name))[0] + '.webp'
+                self.cover_image.save(name, ContentFile(io.getvalue()), save=False)
+            finally:
+                img.close()  # Закрываем изображение
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        path = self.cover_image.path if self.cover_image else None
+        super().delete(*args, **kwargs)
+        if path and os.path.exists(path):
+            try:
+                os.remove(path)
+            except Exception as e:
+                print(f"Ошибка при удалении файла {path}: {e}")
+
+class BlogPostImage(models.Model):
+    post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='images', verbose_name="Пост")
+    image = models.ImageField(upload_to='blog/images/', null=True, blank=True, verbose_name="Изображение")
+
+    class Meta:
+        verbose_name = "Изображение поста"
+        verbose_name_plural = "Изображения постов"
+
+    def __str__(self):
+        return f"Изображение для {self.post.title}"
+
+    def save(self, *args, **kwargs):
         if self.image:
             # Открываем загруженное изображение
             img = Image.open(self.image)
             try:
-                # Resize без crop, max 800 width, preserve aspect (оригинальный формат)
+                # Resize без crop, max 800 width, preserve aspect
                 if img.width > 800:
                     ratio = 800 / img.width
                     new_height = int(img.height * ratio)

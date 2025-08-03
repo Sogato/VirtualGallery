@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from core.models import Artist, Painting, BlogPost, SiteContact, ContactRequest
+from core.models import Artist, Painting, BlogPost, SiteContact, ContactRequest, BlogPostImage
 
 class Command(BaseCommand):
     help = 'Clear all data from the database'
@@ -19,6 +19,8 @@ class Command(BaseCommand):
             obj.delete()
         for obj in BlogPost.objects.all():
             obj.delete()
+        for obj in BlogPostImage.objects.all():
+            obj.delete()  # Для удаления дополнительных изображений с файлами
         for obj in ContactRequest.objects.all():
             obj.delete()  # Для ContactRequest нет файлов, но на всякий
 

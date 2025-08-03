@@ -8,7 +8,7 @@
     <section class="hero-section full-viewport">
         <div class="container h-100">
             <div class="row g-0 align-items-center h-100">
-                <div class="col-lg-6 h-100 d-flex align-items-center">
+                <div class="col-lg-6 order-2 order-lg-1 h-100 d-flex align-items-center">
                     <div class="artist-content">
                         <h1 class="artist-name-hero">
                             <span class="name-line">{{ artist.name }}</span>
@@ -17,13 +17,25 @@
                         <div class="bio-wrapper">
                             <p class="artist-bio-text">{{ artist.bio }}</p>
                         </div>
+                        <!-- Mobile image placement -->
+                        <div class="d-lg-none mobile-artist-image">
+                            {% if artist.photo %}
+                                <div class="artist-image-wrapper">
+                                    <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-hero-image">
+                                </div>
+                            {% else %}
+                                <div class="artist-image-wrapper no-photo">
+                                    <div class="image-placeholder"></div>
+                                </div>
+                            {% endif %}
+                        </div>
                         <div class="hero-actions">
                             <a href="{% url 'painting_list' %}" class="btn btn-primary btn-hero">Смотреть работы</a>
                             <a href="{% url 'contacts' %}" class="btn btn-outline-dark btn-hero">Связаться</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 h-100 d-flex align-items-center">
+                <div class="col-lg-6 order-1 order-lg-2 h-100 d-flex align-items-center d-none d-lg-flex">
                     {% if artist.photo %}
                         <div class="artist-image-wrapper">
                             <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-hero-image">
@@ -92,7 +104,7 @@
                     <div class="featured-static-grid">
                         <div class="row g-4 justify-content-center">
                             {% for painting in featured_paintings %}
-                                <div class="col-md-4">
+                                <div class="col-lg-4 col-md-6">
                                     <a href="{% url 'painting_detail' painting.slug %}" class="painting-card-link">
                                         <div class="painting-card featured-home-card">
                                             <div class="painting-image-wrapper">
@@ -153,68 +165,100 @@
                 const carouselInner = document.getElementById('carousel-inner-container');
 
                 if (paintings.length > 3 && carouselInner) {
-                    // Calculate number of slides needed
-                    const paintingsPerSlide = 3;
-                    const totalPaintings = paintings.length;
-                    const slidesNeeded = Math.ceil((totalPaintings * 3) / paintingsPerSlide); // Create enough slides for smooth cycling
+                    // Determine paintings per slide based on screen size
+                    const getSlideConfig = () => {
+                        const width = window.innerWidth;
+                        if (width < 768) return { perSlide: 1, class: 'col-12' };
+                        if (width < 992) return { perSlide: 2, class: 'col-6' };
+                        return { perSlide: 3, class: 'col-lg-4' };
+                    };
 
-                    // Create cycled array of paintings
-                    const cycledPaintings = [];
-                    for (let i = 0; i < slidesNeeded * paintingsPerSlide; i++) {
-                        cycledPaintings.push(paintings[i % totalPaintings]);
-                    }
+                    const generateSlides = () => {
+                        // Clear existing slides
+                        carouselInner.innerHTML = '';
 
-                    // Generate slides
-                    for (let slideIndex = 0; slideIndex < slidesNeeded; slideIndex++) {
-                        const slideDiv = document.createElement('div');
-                        slideDiv.className = `carousel-item ${slideIndex === 0 ? 'active' : ''}`;
+                        const config = getSlideConfig();
+                        const paintingsPerSlide = config.perSlide;
+                        const colClass = config.class;
 
-                        const slideContent = document.createElement('div');
-                        slideContent.className = 'carousel-slide';
+                        const totalPaintings = paintings.length;
+                        const slidesNeeded = Math.ceil((totalPaintings * 3) / paintingsPerSlide);
 
-                        const row = document.createElement('div');
-                        row.className = 'row g-4';
-
-                        // Add 3 paintings to this slide
-                        for (let i = 0; i < paintingsPerSlide; i++) {
-                            const paintingIndex = slideIndex * paintingsPerSlide + i;
-                            const painting = cycledPaintings[paintingIndex];
-
-                            const col = document.createElement('div');
-                            col.className = 'col-md-4';
-                            col.innerHTML = `
-                                <a href="${painting.detail_url}" class="painting-card-link">
-                                    <div class="painting-card featured-home-card">
-                                        <div class="painting-image-wrapper">
-                                            <img src="${painting.image_url}"
-                                                 class="painting-image"
-                                                 alt="${painting.title}"
-                                                 loading="lazy">
-                                            <div class="painting-hover-overlay">
-                                                <div class="overlay-content">
-                                                    <span class="view-icon">
-                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span class="view-text">Подробнее</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="painting-details featured-home-details">
-                                            <h3 class="painting-name">${painting.title}</h3>
-                                        </div>
-                                    </div>
-                                </a>
-                            `;
-                            row.appendChild(col);
+                        // Create cycled array of paintings
+                        const cycledPaintings = [];
+                        for (let i = 0; i < slidesNeeded * paintingsPerSlide; i++) {
+                            cycledPaintings.push(paintings[i % totalPaintings]);
                         }
 
-                        slideContent.appendChild(row);
-                        slideDiv.appendChild(slideContent);
-                        carouselInner.appendChild(slideDiv);
-                    }
+                        // Generate slides
+                        for (let slideIndex = 0; slideIndex < slidesNeeded; slideIndex++) {
+                            const slideDiv = document.createElement('div');
+                            slideDiv.className = `carousel-item ${slideIndex === 0 ? 'active' : ''}`;
+
+                            const slideContent = document.createElement('div');
+                            slideContent.className = 'carousel-slide';
+
+                            const row = document.createElement('div');
+                            row.className = 'row g-4';
+
+                            // Add paintings to this slide
+                            for (let i = 0; i < paintingsPerSlide; i++) {
+                                const paintingIndex = slideIndex * paintingsPerSlide + i;
+                                const painting = cycledPaintings[paintingIndex];
+
+                                const col = document.createElement('div');
+                                col.className = colClass;
+                                col.innerHTML = `
+                                    <a href="${painting.detail_url}" class="painting-card-link">
+                                        <div class="painting-card featured-home-card">
+                                            <div class="painting-image-wrapper">
+                                                <img src="${painting.image_url}"
+                                                     class="painting-image"
+                                                     alt="${painting.title}"
+                                                     loading="lazy">
+                                                <div class="painting-hover-overlay">
+                                                    <div class="overlay-content">
+                                                        <span class="view-icon">
+                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>
+                                                        </span>
+                                                        <span class="view-text">Подробнее</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="painting-details featured-home-details">
+                                                <h3 class="painting-name">${painting.title}</h3>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `;
+                                row.appendChild(col);
+                            }
+
+                            slideContent.appendChild(row);
+                            slideDiv.appendChild(slideContent);
+                            carouselInner.appendChild(slideDiv);
+                        }
+                    };
+
+                    // Initial generation
+                    generateSlides();
+
+                    // Regenerate on resize with debounce
+                    let resizeTimer;
+                    window.addEventListener('resize', () => {
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(() => {
+                            generateSlides();
+                            // Reinitialize carousel after regeneration
+                            const carousel = bootstrap.Carousel.getInstance(document.getElementById('featuredCarousel'));
+                            if (carousel) {
+                                carousel.to(0);
+                            }
+                        }, 250);
+                    });
 
                     // Initialize carousel
                     const carousel = new bootstrap.Carousel(document.getElementById('featuredCarousel'), {
