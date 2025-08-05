@@ -7,6 +7,7 @@ from django.utils.text import slugify
 from unidecode import unidecode  # Для правильной транслитерации русского в slugs
 import os
 
+
 class Command(BaseCommand):
     help = 'Populate the database with sample data'
 
@@ -25,18 +26,22 @@ class Command(BaseCommand):
                     artist.photo = File(open(full_path, 'rb'), name=os.path.basename(full_path))
                     break
             else:
-                self.stdout.write(self.style.WARNING('Artist photo not found in media/sample_images/artist_photo (any format)'))
+                self.stdout.write(
+                    self.style.WARNING('Artist photo not found in media/sample_images/artist_photo (any format)'))
             artist.save()  # Вызываем save модели для обработки
             self.stdout.write(self.style.SUCCESS('Created Artist'))
 
-        # SiteContact (singleton)
+        # SiteContact (singleton) с социальными сетями
         if not SiteContact.objects.exists():
             site_contact = SiteContact(
                 phone='+7 (123) 456-78-90',
-                email='info@artgallery.ru'
+                email='info@artgallery.ru',
+                vk_link='https://vk.com/artgallery_example',
+                instagram_link='https://instagram.com/artgallery_example',
+                telegram_link='https://t.me/artgallery_example'
             )
             site_contact.save()
-            self.stdout.write(self.style.SUCCESS('Created SiteContact'))
+            self.stdout.write(self.style.SUCCESS('Created SiteContact with social links'))
 
         # Paintings (14 штук)
         painting_titles = [
@@ -69,7 +74,7 @@ class Command(BaseCommand):
             painting = Painting(
                 title=painting_titles[i],
                 description=descriptions[i],
-                creation_date=date.today() - timedelta(days=random.randint(1, 365*5)),
+                creation_date=date.today() - timedelta(days=random.randint(1, 365 * 5)),
                 price=price,
                 is_featured=random.choice([True, False])
             )
@@ -81,7 +86,8 @@ class Command(BaseCommand):
                     painting.image = File(open(full_path, 'rb'), name=f'painting_image_{i}{ext}')
                     break
             else:
-                self.stdout.write(self.style.WARNING('Painting image not found in media/sample_images/painting_image (any format)'))
+                self.stdout.write(
+                    self.style.WARNING('Painting image not found in media/sample_images/painting_image (any format)'))
             painting.save()  # Вызываем save модели для обработки
         self.stdout.write(self.style.SUCCESS('Created 14 Paintings'))
 
@@ -126,7 +132,8 @@ class Command(BaseCommand):
                         image_added = True
                         break
                 if not image_added:
-                    self.stdout.write(self.style.WARNING(f'Blog cover image not found for post {post.title}. Creating without images.'))
+                    self.stdout.write(self.style.WARNING(
+                        f'Blog cover image not found for post {post.title}. Creating without images.'))
                     post.save()
                     continue
 

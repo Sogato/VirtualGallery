@@ -66,20 +66,35 @@
                             {% endif %}
 
                             <!-- Social Links -->
-                            <div class="social-section">
-                                <h3 class="social-title">Социальные сети</h3>
-                                <div class="social-links">
-                                    <a href="#" target="_blank" class="social-link vk" title="VKontakte">
-                                        <i class="fab fa-vk"></i>
-                                    </a>
-                                    <a href="#" target="_blank" class="social-link instagram" title="Instagram">
-                                        <i class="fab fa-instagram"></i>
-                                    </a>
-                                    <a href="#" target="_blank" class="social-link telegram" title="Telegram">
-                                        <i class="fab fa-telegram-plane"></i>
-                                    </a>
-                                </div>
-                            </div>
+                            {% if site_contact %}
+                                {% if site_contact.vk_link or site_contact.instagram_link or site_contact.telegram_link %}
+                                    <div class="social-section">
+                                        <h3 class="social-title">Социальные сети</h3>
+                                        <div class="social-links">
+                                            {% if site_contact.vk_link %}
+                                                <a href="{{ site_contact.vk_link }}" target="_blank" class="social-link vk" title="VKontakte">
+                                                    <i class="fab fa-vk"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if site_contact.instagram_link %}
+                                                <a href="{{ site_contact.instagram_link }}" target="_blank" class="social-link instagram" title="Instagram*">
+                                                    <i class="fab fa-instagram"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if site_contact.telegram_link %}
+                                                <a href="{{ site_contact.telegram_link }}" target="_blank" class="social-link telegram" title="Telegram">
+                                                    <i class="fab fa-telegram-plane"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        {% if site_contact.instagram_link %}
+                                            <p class="social-disclaimer">
+                                                * Деятельность Meta Platforms Inc. и принадлежащих ей социальных сетей Facebook и Instagram запрещена на территории РФ по основаниям осуществления экстремистской деятельности.
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
 

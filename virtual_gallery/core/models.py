@@ -281,6 +281,12 @@ class ContactRequest(models.Model):
 class SiteContact(models.Model):
     phone = models.CharField(max_length=20, blank=True, verbose_name="Телефон")
     email = models.EmailField(blank=True, verbose_name="E-mail")
+    vk_link = models.URLField(blank=True, verbose_name="Ссылка на VK",
+                              help_text="Полная ссылка, например: https://vk.com/username")
+    instagram_link = models.URLField(blank=True, verbose_name="Ссылка на Instagram*",
+                                     help_text="Полная ссылка, например: https://instagram.com/username")
+    telegram_link = models.URLField(blank=True, verbose_name="Ссылка на Telegram",
+                                    help_text="Полная ссылка, например: https://t.me/username")
 
     class Meta:
         verbose_name = "Контактная информация"

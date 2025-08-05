@@ -21,7 +21,7 @@
                 {% for post in posts %}
                     <article class="blog-post" data-aos>
                         <h3 class="blog-title">{{ post.title }}</h3>
-                        <p class="blog-date">{{ post.pub_date|date:"d F Y" }}</p>
+                        <p class="blog-date">{{ post.pub_date|date:"d E Y" }}</p>
                         <div class="blog-content">
                             {% if post.cover_image or post.images.exists %}
                                 <div class="blog-image-slider">
@@ -116,6 +116,11 @@
                 const images = slider.querySelectorAll('.slider-image');
                 const sliderContainer = slider.querySelector('.slider-container');
                 const sliderWrapper = slider.querySelector('.slider-wrapper');
+
+                // Проверяем количество изображений и добавляем класс для одиночных изображений
+                if (images.length <= 1) {
+                    slider.classList.add('single-image');
+                }
 
                 // Touch swipe functionality
                 let touchStartX = 0;

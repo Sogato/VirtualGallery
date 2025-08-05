@@ -130,7 +130,34 @@ class ContactRequestAdmin(admin.ModelAdmin):
 
 @admin.register(SiteContact)
 class SiteContactAdmin(admin.ModelAdmin):
-    list_display = ('phone', 'email')
+    list_display = ('phone', 'email', 'has_vk', 'has_instagram', 'has_telegram')
+    fieldsets = (
+        ('Основные контакты', {
+            'fields': ('phone', 'email')
+        }),
+        ('Социальные сети', {
+            'fields': ('vk_link', 'instagram_link', 'telegram_link'),
+            'description': '* Деятельность Meta Platforms Inc. и принадлежащих ей социальных сетей Facebook и Instagram запрещена на территории РФ.'
+        }),
+    )
+
+    def has_vk(self, obj):
+        return bool(obj.vk_link)
+
+    has_vk.boolean = True
+    has_vk.short_description = "VK"
+
+    def has_instagram(self, obj):
+        return bool(obj.instagram_link)
+
+    has_instagram.boolean = True
+    has_instagram.short_description = "Instagram"
+
+    def has_telegram(self, obj):
+        return bool(obj.telegram_link)
+
+    has_telegram.boolean = True
+    has_telegram.short_description = "Telegram"
 
     def has_add_permission(self, request):
         # Singleton: не позволять добавлять больше одной записи

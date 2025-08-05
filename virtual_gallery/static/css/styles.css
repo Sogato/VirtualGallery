@@ -3634,3 +3634,115 @@ html {
         display: none !important;
     }
 }
+
+
+/* ===== FIXES FOR ISSUES ===== */
+
+/* 1. Убираем hover overlay на мобильных устройствах */
+@media (max-width: 767px) {
+    .painting-hover-overlay {
+        display: none !important;
+    }
+
+    /* Убираем эффект масштабирования изображения при наведении на мобилках */
+    .painting-card:hover .painting-image,
+    .featured-home-card:hover .painting-image,
+    .gallery-card:hover .painting-image {
+        transform: none;
+    }
+}
+
+/* Альтернативный подход для touch-устройств */
+@media (hover: none) and (pointer: coarse) {
+    .painting-hover-overlay {
+        display: none !important;
+    }
+
+    .painting-card:hover .painting-image,
+    .featured-home-card:hover .painting-image,
+    .gallery-card:hover .painting-image {
+        transform: none;
+    }
+}
+
+/* 2. Скрываем подсказку "Двигайте мышью" когда только одно изображение */
+.blog-image-slider:has(.slider-image:only-child) .slider-wrapper::after,
+.blog-image-slider:not(:has(.indicator)) .slider-wrapper::after,
+.blog-image-slider.single-image .slider-wrapper::after {
+    display: none !important;
+}
+
+/* 3. Исправление высоты карточек на мобильных */
+@media (max-width: 767px) {
+    .painting-card.featured-home-card {
+        height: 100%;
+        min-height: auto;
+    }
+
+    .featured-home-details {
+        min-height: 80px; /* Минимальная высота для контента */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem 1rem;
+    }
+
+    .featured-home-details .painting-name {
+        margin: 0;
+        padding: 0.5rem 0; /* Добавляем внутренние отступы */
+    }
+
+    /* Убираем лишние отступы у контейнера */
+    .featured-static-grid .painting-card-link {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .featured-static-grid .painting-card {
+        margin: 0;
+        height: 100%;
+    }
+
+    /* Дополнительная корректировка для карточек в каруселе */
+    #featuredCarousel .painting-card.featured-home-card {
+        height: 100%;
+    }
+
+    #featuredCarousel .featured-home-details {
+        min-height: 90px;
+    }
+}
+
+/* 4. Стили для дисклеймера Instagram */
+.social-disclaimer {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #666;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-style: italic;
+}
+
+/* Добавляем звездочку к Instagram */
+.social-link.instagram::after {
+    content: '*';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 1rem;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Responsive для дисклеймера */
+@media (max-width: 767px) {
+    .social-disclaimer {
+        font-size: 0.7rem;
+        padding: 0.75rem 0.5rem 0;
+        line-height: 1.3;
+    }
+}
