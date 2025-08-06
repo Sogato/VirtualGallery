@@ -39,7 +39,6 @@ class BlogPostImageInline(admin.TabularInline):
     verbose_name_plural = "Дополнительные изображения"
 
 
-@admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
     """
     Админ-панель для модели Artist.
@@ -78,7 +77,6 @@ class ArtistAdmin(admin.ModelAdmin):
             obj.delete()
 
 
-@admin.register(Painting)
 class PaintingAdmin(admin.ModelAdmin):
     """
     Админ-панель для модели Painting.
@@ -124,7 +122,6 @@ class PaintingAdmin(admin.ModelAdmin):
             obj.delete()
 
 
-@admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
     """
     Админ-панель для модели BlogPost.
@@ -167,7 +164,6 @@ class BlogPostAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(ContactRequest)
 class ContactRequestAdmin(admin.ModelAdmin):
     """
     Админ-панель для модели ContactRequest.
@@ -201,7 +197,6 @@ class ContactRequestAdmin(admin.ModelAdmin):
             obj.delete()
 
 
-@admin.register(SiteContact)
 class SiteContactAdmin(admin.ModelAdmin):
     """
     Админ-панель для модели SiteContact.
@@ -248,3 +243,21 @@ class SiteContactAdmin(admin.ModelAdmin):
         """Удаляет объекты (нет файлов, но для consistency)."""
         for obj in queryset:
             obj.delete()
+
+
+# Кастомизация админ-сайта
+class CustomAdminSite(admin.AdminSite):
+    site_header = 'Виртуальная Галерея: Панель Управления'  # Заголовок в шапке
+    site_title = 'Админ-панель Виртуальной Галереи'  # Title страницы
+    index_title = 'Добро пожаловать в панель управления'  # Заголовок главной страницы админки
+
+
+# Создаём экземпляр кастомного сайта
+custom_admin_site = CustomAdminSite(name='custom_admin')
+
+# Регистрируем все модели на кастомном сайте
+custom_admin_site.register(Artist, ArtistAdmin)
+custom_admin_site.register(Painting, PaintingAdmin)
+custom_admin_site.register(BlogPost, BlogPostAdmin)
+custom_admin_site.register(ContactRequest, ContactRequestAdmin)
+custom_admin_site.register(SiteContact, SiteContactAdmin)

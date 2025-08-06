@@ -17,13 +17,13 @@ https://docs.djangoproject.com/en/5.2/topics/http/urls/
     1. Импорт: from django.urls import include, path
     2. Добавление URL: path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path, include
+from core.admin import custom_admin_site
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('9ytsjC7zcf-zEadpR1M98A/', custom_admin_site.urls),  # Путь для админки
     path('', include('core.urls')),  # Включаем URL из приложения core
 ]
 
