@@ -1,10 +1,12 @@
 from .base import *
 
+# Разработка: включен debug-режим
 DEBUG = True
 
+# Разрешенные хосты для dev
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-# Database (локальный PostgreSQL для dev, данные из .env с дефолтами)
+# База данных: локальный PostgreSQL для разработки, данные из .env
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -15,5 +17,3 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
-
-# Дополнительно для dev: logging или что-то, если нужно

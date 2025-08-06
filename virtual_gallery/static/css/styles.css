@@ -1219,7 +1219,7 @@ img[data-lazy].loaded {
     display: block;
     font-family: 'Inter', sans-serif;
     font-size: 0.75rem;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.7);
     margin-top: 0.25rem;
 }
 
@@ -2207,6 +2207,14 @@ html {
 
 /* Mobile carousel button fix */
 @media (max-width: 767px) {
+    html {
+        font-size: 16px;
+    }
+
+    .artist-subtitle {
+        font-size: 12px;
+    }
+
     .featured-carousel-container {
         margin: 0;
         padding: 10px 0 20px;
@@ -3375,5 +3383,374 @@ html {
         transition: none;
         animation: none;
         transform: none;
+    }
+}
+
+
+/* ===== BLOG IMAGE SLIDER IMPROVEMENTS ===== */
+
+/* Улучшения для слайдера изображений в блоге */
+.blog-image-slider .slider-wrapper {
+    cursor: crosshair; /* Указатель крестик для переключения */
+}
+
+.blog-image-slider .slider-wrapper:hover {
+    cursor: crosshair;
+}
+
+/* Увеличенные индикаторы для десктопа */
+@media (min-width: 768px) {
+    .slider-indicators {
+        padding: 10px 16px;
+        gap: 12px;
+    }
+
+    .indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 100; /* Высокий z-index для клика */
+    }
+
+    .indicator:hover {
+        background: rgba(255, 255, 255, 0.8);
+        transform: scale(1.3);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .indicator.active {
+        background: #ffffff;
+        width: 32px;
+        border-radius: 6px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+
+    .indicator.active:hover {
+        transform: scale(1.1);
+    }
+}
+
+/* Улучшенная интерактивность для мыши */
+@media (min-width: 768px) {
+    .blog-image-slider .slider-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(0,0,0,0.1) 0%,
+            transparent 20%,
+            transparent 80%,
+            rgba(0,0,0,0.1) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .blog-image-slider .slider-wrapper:hover::before {
+        opacity: 1;
+    }
+
+    /* Визуальная подсказка для переключения */
+    .blog-image-slider .slider-wrapper::after {
+        content: 'Двигайте мышью для переключения';
+        position: absolute;
+        bottom: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.6); /* Более прозрачный фон */
+        color: rgba(255, 255, 255, 0.9); /* Более прозрачный текст */
+        padding: 4px 10px; /* Меньший отступ */
+        border-radius: 12px; /* Меньший радиус */
+        font-size: 0.7rem; /* Меньший размер шрифта */
+        font-family: 'Inter', sans-serif;
+        font-weight: 400; /* Обычная толщина шрифта */
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+        z-index: 10;
+        letter-spacing: 0.02em; /* Немного разреженный текст */
+    }
+
+    .blog-image-slider .slider-wrapper:hover::after {
+        opacity: 1;
+    }
+
+    /* Скрываем подсказку после первого взаимодействия */
+    .blog-image-slider.interacted .slider-wrapper::after {
+        display: none;
+    }
+}
+
+/* Увеличенная область клика для индикаторов */
+.slider-indicators .indicator {
+    position: relative;
+}
+
+.slider-indicators .indicator::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    z-index: -1;
+}
+
+/* Плавные переходы между изображениями */
+.slider-image {
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* Отключение выделения текста при взаимодействии с мышью */
+.blog-image-slider .slider-wrapper {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+
+/* Mobile specific blog adjustments */
+@media (max-width: 767px) {
+    .blog-section {
+        padding: 1.5rem 0 !important;
+    }
+
+    .blog-post {
+        padding: 1.25rem !important;
+        margin-bottom: 1.5rem !important;
+        border-radius: 12px;
+    }
+
+    .blog-content {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .blog-title {
+        font-size: 1.375rem;
+        line-height: 1.3;
+    }
+
+    .blog-text p {
+        font-size: 0.9375rem;
+        text-align: left;
+    }
+
+    /* Compact pagination on mobile */
+    .blog-pagination {
+        gap: 1rem;
+    }
+
+    .blog-page-link {
+        padding: 10px 16px;
+    }
+
+    .blog-page-link-text {
+        display: none; /* Hide text, show only arrows */
+    }
+
+    .blog-page-info {
+        font-size: 0.9375rem;
+    }
+
+    /* Компактные индикаторы слайдера для мобилки */
+    .slider-indicators {
+        padding: 6px 10px;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 15px;
+        backdrop-filter: blur(8px);
+    }
+
+    .indicator {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.3s ease;
+        position: relative;
+        min-width: unset;
+        min-height: unset;
+        display: block;
+    }
+
+    .indicator::before {
+        display: none; /* Убираем двойной элемент */
+    }
+
+    .indicator:hover {
+        background: rgba(255, 255, 255, 0.7);
+        transform: scale(1.2);
+    }
+
+    .indicator.active {
+        background: #ffffff;
+        width: 20px;
+        border-radius: 4px;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    .indicator.active:hover {
+        transform: scale(1.1);
+    }
+
+    /* Отключаем десктопные функции на мобилке */
+    .blog-image-slider .slider-wrapper {
+        cursor: default;
+    }
+
+    .blog-image-slider .slider-wrapper::before,
+    .blog-image-slider .slider-wrapper::after {
+        display: none !important;
+    }
+
+    /* Увеличиваем область касания для индикаторов */
+    .slider-indicators .indicator {
+        position: relative;
+        z-index: 100;
+    }
+
+    .slider-indicators .indicator::after {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: -12px;
+        right: -12px;
+        bottom: -12px;
+        z-index: -1;
+    }
+
+    /* Убираем интерактивность мыши на мобилке */
+    .blog-image-slider.interacted .slider-wrapper::after {
+        display: none !important;
+    }
+}
+
+
+/* ===== FIXES FOR ISSUES ===== */
+
+/* 1. Убираем hover overlay на мобильных устройствах */
+@media (max-width: 767px) {
+    .painting-hover-overlay {
+        display: none !important;
+    }
+
+    /* Убираем эффект масштабирования изображения при наведении на мобилках */
+    .painting-card:hover .painting-image,
+    .featured-home-card:hover .painting-image,
+    .gallery-card:hover .painting-image {
+        transform: none;
+    }
+}
+
+/* Альтернативный подход для touch-устройств */
+@media (hover: none) and (pointer: coarse) {
+    .painting-hover-overlay {
+        display: none !important;
+    }
+
+    .painting-card:hover .painting-image,
+    .featured-home-card:hover .painting-image,
+    .gallery-card:hover .painting-image {
+        transform: none;
+    }
+}
+
+/* 2. Скрываем подсказку "Двигайте мышью" когда только одно изображение */
+.blog-image-slider:has(.slider-image:only-child) .slider-wrapper::after,
+.blog-image-slider:not(:has(.indicator)) .slider-wrapper::after,
+.blog-image-slider.single-image .slider-wrapper::after {
+    display: none !important;
+}
+
+/* 3. Исправление высоты карточек на мобильных */
+@media (max-width: 767px) {
+    .painting-card.featured-home-card {
+        height: 100%;
+        min-height: auto;
+    }
+
+    .featured-home-details {
+        min-height: 80px; /* Минимальная высота для контента */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem 1rem;
+    }
+
+    .featured-home-details .painting-name {
+        margin: 0;
+        padding: 0.5rem 0; /* Добавляем внутренние отступы */
+    }
+
+    /* Убираем лишние отступы у контейнера */
+    .featured-static-grid .painting-card-link {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .featured-static-grid .painting-card {
+        margin: 0;
+        height: 100%;
+    }
+
+    /* Дополнительная корректировка для карточек в каруселе */
+    #featuredCarousel .painting-card.featured-home-card {
+        height: 100%;
+    }
+
+    #featuredCarousel .featured-home-details {
+        min-height: 90px;
+    }
+}
+
+/* 4. Стили для дисклеймера Instagram */
+.social-disclaimer {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #666;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-style: italic;
+}
+
+/* Добавляем звездочку к Instagram */
+.social-link.instagram::after {
+    content: '*';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 1rem;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Responsive для дисклеймера */
+@media (max-width: 767px) {
+    .social-disclaimer {
+        font-size: 0.7rem;
+        padding: 0.75rem 0.5rem 0;
+        line-height: 1.3;
     }
 }

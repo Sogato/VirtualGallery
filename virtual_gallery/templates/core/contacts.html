@@ -1,16 +1,15 @@
-<!-- templates/core/contacts.html -->
 {% extends 'base.html' %}
 {% load widget_tweaks %}
 
-{% block title %}Контакты - Галерея Художника{% endblock %}
+{% block title %}Контактная информация{% endblock %}
 
 {% block extra_css %}
-    <!-- Font Awesome for social icons -->
+    <!-- Font Awesome для иконок социальных сетей -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block content %}
-    <!-- Contacts Hero Section -->
+    <!-- Секция героя страницы контактов -->
     <section class="contacts-hero">
         <div class="container">
             <div class="contacts-hero-content" data-aos>
@@ -20,12 +19,12 @@
         </div>
     </section>
 
-    <!-- Contacts Content Section -->
+    <!-- Секция содержимого контактов -->
     <section class="contacts-content-section">
         <div class="container">
             <div class="contacts-wrapper">
                 <div class="row g-4 g-lg-5">
-                    <!-- Contact Info Column -->
+                    <!-- Колонка с контактной информацией -->
                     <div class="col-lg-5">
                         <div class="contact-info-block" data-aos="fade-right">
                             <h2 class="contact-block-title">Контактная информация</h2>
@@ -65,25 +64,40 @@
                                 <p class="no-contact-info">Контактная информация скоро будет добавлена</p>
                             {% endif %}
 
-                            <!-- Social Links -->
-                            <div class="social-section">
-                                <h3 class="social-title">Социальные сети</h3>
-                                <div class="social-links">
-                                    <a href="#" target="_blank" class="social-link vk" title="VKontakte">
-                                        <i class="fab fa-vk"></i>
-                                    </a>
-                                    <a href="#" target="_blank" class="social-link instagram" title="Instagram">
-                                        <i class="fab fa-instagram"></i>
-                                    </a>
-                                    <a href="#" target="_blank" class="social-link telegram" title="Telegram">
-                                        <i class="fab fa-telegram-plane"></i>
-                                    </a>
-                                </div>
-                            </div>
+                            <!-- Ссылки на социальные сети -->
+                            {% if site_contact %}
+                                {% if site_contact.vk_link or site_contact.instagram_link or site_contact.telegram_link %}
+                                    <div class="social-section">
+                                        <h3 class="social-title">Социальные сети</h3>
+                                        <div class="social-links">
+                                            {% if site_contact.vk_link %}
+                                                <a href="{{ site_contact.vk_link }}" target="_blank" class="social-link vk" title="VKontakte">
+                                                    <i class="fab fa-vk"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if site_contact.instagram_link %}
+                                                <a href="{{ site_contact.instagram_link }}" target="_blank" class="social-link instagram" title="Instagram*">
+                                                    <i class="fab fa-instagram"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if site_contact.telegram_link %}
+                                                <a href="{{ site_contact.telegram_link }}" target="_blank" class="social-link telegram" title="Telegram">
+                                                    <i class="fab fa-telegram-plane"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        {% if site_contact.instagram_link %}
+                                            <p class="social-disclaimer">
+                                                * Деятельность Meta Platforms Inc. и принадлежащих ей социальных сетей Facebook и Instagram запрещена на территории РФ по основаниям осуществления экстремистской деятельности.
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
 
-                    <!-- Contact Form Column -->
+                    <!-- Колонка с формой контакта -->
                     <div class="col-lg-7">
                         <div class="contact-form-block" data-aos="fade-left">
                             <h2 class="contact-block-title">Написать сообщение</h2>
@@ -138,7 +152,7 @@
         </div>
     </section>
 
-    <!-- Quote Section -->
+    <!-- Секция с цитатой -->
     <section class="contact-quote-section">
         <div class="container">
             <div class="quote-block">
@@ -156,8 +170,8 @@
 
 {% block extra_js %}
     <script>
-        // Form validation enhancement
         document.addEventListener('DOMContentLoaded', function() {
+            // Улучшение валидации формы (отключение кнопки и смена текста при отправке)
             const form = document.querySelector('.modern-contact-form');
             if (form) {
                 form.addEventListener('submit', function(e) {

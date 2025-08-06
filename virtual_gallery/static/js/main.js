@@ -1,8 +1,5 @@
-// static/js/main.js
-
 document.addEventListener('DOMContentLoaded', function() {
-
-    // ===== LOADING SCREEN =====
+    // ===== Экран загрузки =====
     const loadingScreen = document.createElement('div');
     loadingScreen.className = 'loading-screen';
     loadingScreen.innerHTML = `
@@ -13,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.body.appendChild(loadingScreen);
 
-    // Hide loading screen when page is fully loaded
+    // Скрытие экрана загрузки после полной загрузки страницы
     window.addEventListener('load', function() {
         setTimeout(() => {
             loadingScreen.classList.add('fade-out');
@@ -23,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     });
 
-    // ===== SMOOTH SCROLL =====
-    // For all anchor links with hash
+    // ===== Плавная прокрутка к якорям =====
+    // Для всех ссылок с хэшем
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -38,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Scroll indicator functionality (if exists on page)
+    // Функционал индикатора прокрутки (если присутствует на странице)
     const scrollIndicator = document.querySelector('.scroll-indicator');
     if (scrollIndicator) {
         scrollIndicator.addEventListener('click', function() {
@@ -51,8 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Hide scroll indicator when user scrolls
-        let scrollTimeout;
+        // Скрытие индикатора прокрутки при скролле
         window.addEventListener('scroll', function() {
             if (window.scrollY > 100) {
                 scrollIndicator.style.opacity = '0';
@@ -64,41 +60,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== NAVBAR SCROLL EFFECT =====
+    // ===== Эффект навигационной панели при скролле =====
     const navbar = document.querySelector('.main-header');
     let lastScroll = 0;
 
     window.addEventListener('scroll', function() {
         const currentScroll = window.pageYOffset;
 
-        // Add shadow on scroll
+        // Добавление тени при скролле
         if (currentScroll > 10) {
             navbar.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
         }
 
-        // Hide/show navbar on scroll (optional - uncomment if wanted)
-        /*
-        if (currentScroll > lastScroll && currentScroll > 100) {
+        // Скрытие/показ навигации при скролле (опционально - раскомментировать если нужно)
+        if (currentScroll > lastScroll && currentScroll > 150) {
             navbar.classList.add('navbar-hidden');
         } else {
             navbar.classList.remove('navbar-hidden');
         }
         lastScroll = currentScroll;
-        */
     });
 
-    // ===== IMAGE LAZY LOADING =====
-    // For browsers that don't support native lazy loading
+    // ===== Ленивая загрузка изображений =====
+    // Для браузеров, поддерживающих native lazy loading
     if ('loading' in HTMLImageElement.prototype) {
-        // Browser supports native lazy loading
         const images = document.querySelectorAll('img[loading="lazy"]');
         images.forEach(img => {
             img.src = img.dataset.src || img.src;
         });
     } else {
-        // Fallback for older browsers
+        // Фоллбэк для старых браузеров с использованием IntersectionObserver
         const lazyImages = document.querySelectorAll('img[data-lazy]');
         const imageObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
@@ -114,10 +107,10 @@ document.addEventListener('DOMContentLoaded', function() {
         lazyImages.forEach(img => imageObserver.observe(img));
     }
 
-    // ===== CAROUSEL ENHANCEMENTS =====
+    // ===== Улучшения для карусели =====
     const featuredCarousel = document.querySelector('#featuredCarousel');
     if (featuredCarousel) {
-        // Pause carousel on hover (desktop only)
+        // Пауза карусели при наведении (только для десктопа)
         if (window.innerWidth > 768) {
             featuredCarousel.addEventListener('mouseenter', function() {
                 const carousel = bootstrap.Carousel.getInstance(this);
@@ -130,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Keyboard navigation
+        // Навигация с клавиатуры
         document.addEventListener('keydown', function(e) {
             const carousel = bootstrap.Carousel.getInstance(featuredCarousel);
             if (carousel) {
@@ -143,12 +136,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== MOBILE MENU ENHANCEMENT =====
+    // ===== Улучшения для мобильного меню =====
     const navbarToggler = document.querySelector('.navbar-toggler');
     const navbarCollapse = document.querySelector('.navbar-collapse');
 
     if (navbarToggler && navbarCollapse) {
-        // Close menu when clicking outside
+        // Закрытие меню при клике вне его
         document.addEventListener('click', function(e) {
             const isClickInsideNav = navbarCollapse.contains(e.target);
             const isClickOnToggler = navbarToggler.contains(e.target);
@@ -158,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Close menu when clicking on a link
+        // Закрытие меню при клике на ссылку
         const navLinks = navbarCollapse.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -169,13 +162,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== ANIMATION ON SCROLL - IMPROVED =====
+    // ===== Анимация при скролле (улучшенная) =====
     const animateOnScroll = () => {
         const elements = document.querySelectorAll('[data-aos]');
 
-        // Adjust trigger point based on device
+        // Корректировка точки срабатывания в зависимости от устройства
         const isMobile = window.innerWidth < 768;
-        const triggerPoint = isMobile ? 50 : 100; // Trigger animations earlier on mobile
+        const triggerPoint = isMobile ? 50 : 100; // Раньше на мобильных
 
         elements.forEach(element => {
             const elementTop = element.getBoundingClientRect().top;
@@ -188,14 +181,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // Check on scroll and load
+    // Проверка при скролле и ресайзе
     window.addEventListener('scroll', animateOnScroll);
     window.addEventListener('resize', animateOnScroll);
 
-    // Initial check with delay to ensure content is loaded
+    // Изначальная проверка с задержкой для загрузки контента
     setTimeout(animateOnScroll, 100);
 
-    // ===== FORM VALIDATION ENHANCEMENT =====
+    // ===== Улучшение валидации форм =====
     const forms = document.querySelectorAll('.needs-validation');
     forms.forEach(form => {
         form.addEventListener('submit', event => {
@@ -207,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== BACK TO TOP BUTTON =====
+    // ===== Кнопка "Наверх" =====
     const backToTopBtn = document.createElement('button');
     backToTopBtn.className = 'back-to-top';
     backToTopBtn.innerHTML = '↑';
@@ -229,13 +222,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== RESPONSIVE HELPERS =====
-    // Update carousel on window resize
+    // ===== Помощники для отзывчивости =====
+    // Обновление карусели при ресайзе окна
     let resizeTimer;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() {
-            // Rebuild carousel if needed
+            // Диспатч события для перестройки карусели
             const event = new Event('resize-carousel');
             document.dispatchEvent(event);
         }, 250);
