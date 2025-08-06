@@ -4,15 +4,34 @@ from django.core.management.base import BaseCommand
 from django.core.files import File
 from core.models import Artist, Painting, BlogPost, SiteContact, ContactRequest, BlogPostImage
 from django.utils.text import slugify
-from unidecode import unidecode  # Вернули для правильной транслитерации в команде
+from unidecode import unidecode
 import os
 
 
 class Command(BaseCommand):
-    help = 'Populate the database with sample data for development server'
+    """
+    Команда для заполнения базы данных тестовыми данными на dev-сервере.
+
+    Создает singleton-объекты (Artist, SiteContact), картины (14 шт.), посты в блоге (7 шт. с разными сценариями изображений)
+    и заявки на связь (4 шт.). Ищет изображения в media/sample_images и прикрепляет их, если найдены.
+    """
+    help = 'Заполняет базу данных тестовыми данными для разработки'
 
     def handle(self, *args, **kwargs):
-        # Artist (singleton)
+        """
+        Основной метод команды: выполняет заполнение базы данных.
+        """
+        self._create_artist()
+        self._create_site_contact()
+        self._create_paintings()
+        self._create_blog_posts()
+        self._create_contact_requests()
+        self.stdout.write(self.style.SUCCESS('База данных успешно заполнена тестовыми данными.'))
+
+    def _create_artist(self):
+        """
+        Создает единственного художника (singleton), если он не существует.
+        """
         if not Artist.objects.exists():
             artist = Artist(
                 name='Иван Иванович Петров',
@@ -21,11 +40,14 @@ class Command(BaseCommand):
             # Пытаемся найти фото в media/sample_images/artist_photo (любое расширение)
             photo_path = os.path.join('media', 'sample_images', 'artist_photo')
             photo_found = self.attach_image(artist, 'photo', photo_path)
-            artist.save()  # Вызываем save для обработки изображения
-            self.stdout.write(self.style.SUCCESS('Created Artist') if photo_found else self.style.WARNING(
-                'Created Artist without photo'))
+            artist.save()  # Сохраняем для обработки изображения
+            self.stdout.write(self.style.SUCCESS('Создан Artist') if photo_found else self.style.WARNING(
+                'Создан Artist без фото'))
 
-        # SiteContact (singleton)
+    def _create_site_contact(self):
+        """
+        Создает контактную информацию сайта (singleton), если она не существует.
+        """
         if not SiteContact.objects.exists():
             site_contact = SiteContact(
                 phone='+7 (123) 456-78-90',
@@ -35,9 +57,12 @@ class Command(BaseCommand):
                 telegram_link='https://t.me/artgallery_example'
             )
             site_contact.save()
-            self.stdout.write(self.style.SUCCESS('Created SiteContact with social links'))
+            self.stdout.write(self.style.SUCCESS('Создан SiteContact с социальными ссылками'))
 
-        # Paintings (14 штук, если ещё нет)
+    def _create_paintings(self):
+        """
+        Создает или дополняет картины до 14 штук.
+        """
         if Painting.objects.count() < 14:
             painting_titles = [
                 'Закат над рекой', 'Горный пейзаж', 'Абстрактная гармония', 'Портрет незнакомки',
@@ -62,11 +87,11 @@ class Command(BaseCommand):
                 'Туман над рекой на рассвете, загадочный и спокойный.'
             ]
 
-            image_path = os.path.join('media', 'sample_images', 'painting_image')  # Только один вариант файла
+            image_path = os.path.join('media', 'sample_images', 'painting_image')  # Путь к изображению
 
             for i in range(14):
                 if Painting.objects.filter(title=painting_titles[i]).exists():
-                    continue  # Пропускаем, если уже есть
+                    continue  # Пропускаем существующие
                 painting = Painting(
                     title=painting_titles[i],
                     description=descriptions[i],
@@ -76,15 +101,18 @@ class Command(BaseCommand):
                 )
                 # Генерируем slug с unidecode для правильной транслитерации
                 painting.slug = slugify(unidecode(painting.title))
-                # Прикрепляем изображение (только один вариант, с суффиксом для уникальности имени)
+                # Прикрепляем изображение (с суффиксом для уникальности)
                 image_found = self.attach_image(painting, 'image', image_path, suffix=f'_{i}')
-                painting.save()  # Вызываем save для генерации изображений и проверки уникальности slug
+                painting.save()  # Сохраняем для генерации изображений и уникальности slug
                 self.stdout.write(
-                    self.style.SUCCESS(f'Created Painting "{painting.title}"') if image_found else self.style.WARNING(
-                        f'Created Painting "{painting.title}" without image'))
-            self.stdout.write(self.style.SUCCESS('Created/Updated Paintings to 14'))
+                    self.style.SUCCESS(f'Создана картина "{painting.title}"') if image_found else self.style.WARNING(
+                        f'Создана картина "{painting.title}" без изображения'))
+            self.stdout.write(self.style.SUCCESS('Картины созданы/обновлены до 14 штук'))
 
-        # BlogPosts (7 штук, с разными сценариями изображений)
+    def _create_blog_posts(self):
+        """
+        Создает или дополняет посты в блоге до 7 штук с разными сценариями изображений.
+        """
         if BlogPost.objects.count() < 7:
             blog_titles = [
                 'Мои впечатления от поездки в Италию',
@@ -105,50 +133,53 @@ class Command(BaseCommand):
                 'Сибирская природа - бесконечный источник идей для моих работ.'
             ]
 
-            blog_image_path = os.path.join('media', 'sample_images', 'blog_image')  # Только один вариант файла
+            blog_image_path = os.path.join('media', 'sample_images', 'blog_image')  # Путь к изображению
 
             for i in range(7):
                 if BlogPost.objects.filter(title=blog_titles[i]).exists():
-                    continue  # Пропускаем, если уже есть
+                    continue  # Пропускаем существующие
                 post = BlogPost(
                     title=blog_titles[i],
                     content=contents[i]
                 )
                 # Генерируем slug с unidecode для правильной транслитерации
                 post.slug = slugify(unidecode(post.title))
-                # Сценарии изображений (детерминированные для покрытия):
+                # Сценарии изображений (детерминированные):
                 # 0-1: без изображений
-                # 2-3: только cover (0 extra)
-                # 4: cover + 1 extra
-                # 5: cover + 2 extra
-                # 6: cover + 4 extra (max 5 total)
+                # 2-3: только обложка
+                # 4: обложка + 1 доп. изображение
+                # 5: обложка + 2 доп.
+                # 6: обложка + 4 доп. (макс. 5 всего)
                 has_cover = i >= 2
                 num_extra = 0 if i < 4 else (1 if i == 4 else (2 if i == 5 else 4))
 
                 if has_cover:
-                    # Прикрепляем cover (один файл, с суффиксом)
+                    # Прикрепляем обложку (с суффиксом)
                     cover_found = self.attach_image(post, 'cover_image', blog_image_path, suffix=f'_{i}')
                     if not cover_found:
                         self.stdout.write(
-                            self.style.WARNING(f'No cover image for BlogPost "{post.title}". Creating without images.'))
-                        num_extra = 0  # Если нет cover, не добавляем extra (по валидации)
+                            self.style.WARNING(f'Нет обложки для поста "{post.title}". Создаю без изображений.'))
+                        num_extra = 0  # Без обложки — без доп. (по валидации)
 
-                post.save()  # Вызываем save для обработки cover и проверки уникальности slug
+                post.save()  # Сохраняем для обработки обложки и уникальности slug
 
-                # Добавляем extra изображения, если нужно (один файл, с суффиксом)
+                # Добавляем доп. изображения (с суффиксами)
                 for j in range(num_extra):
                     extra_image = BlogPostImage(post=post)
                     extra_found = self.attach_image(extra_image, 'image', blog_image_path, suffix=f'_{i}_{j}')
                     if extra_found:
-                        extra_image.save()  # Вызываем save для обработки
+                        extra_image.save()  # Сохраняем для обработки
                     else:
                         self.stdout.write(
-                            self.style.WARNING(f'No extra image for BlogPost "{post.title}" (#{j + 1}). Skipping.'))
+                            self.style.WARNING(f'Нет доп. изображения для поста "{post.title}" (#{j + 1}). Пропускаю.'))
 
-                self.stdout.write(self.style.SUCCESS(f'Created BlogPost "{post.title}" with {num_extra} extra images'))
-            self.stdout.write(self.style.SUCCESS('Created/Updated BlogPosts to 7 with various scenarios'))
+                self.stdout.write(self.style.SUCCESS(f'Создан пост "{post.title}" с {num_extra} доп. изображениями'))
+            self.stdout.write(self.style.SUCCESS('Посты созданы/обновлены до 7 с разными сценариями'))
 
-        # ContactRequests (4 штуки, если ещё нет)
+    def _create_contact_requests(self):
+        """
+        Создает или дополняет заявки на связь до 4 штук.
+        """
         if ContactRequest.objects.count() < 4:
             names = ['Алексей', 'Мария', 'Дмитрий', 'Елена']
             emails = ['alex@example.com', 'maria@example.com', 'dmitry@example.com', 'elena@example.com']
@@ -166,13 +197,18 @@ class Command(BaseCommand):
                     name=names[i],
                     email=emails[i],
                     message=messages[i],
-                    created_at=date.today() - timedelta(days=random.randint(1, 30))  # Разнообразие дат
+                    created_at=date.today() - timedelta(days=random.randint(1, 30))  # Разные даты
                 )
                 request.save()
-            self.stdout.write(self.style.SUCCESS('Created/Updated ContactRequests to 4'))
+            self.stdout.write(self.style.SUCCESS('Заявки созданы/обновлены до 4 штук'))
 
     def attach_image(self, obj, field_name, base_path, suffix=''):
-        """Вспомогательная функция для прикрепления изображения с проверкой расширений."""
+        """
+        Вспомогательная функция: прикрепляет изображение к полю модели, если файл найден.
+
+        Ищет файл с расширениями .webp, .jpg, .png. Добавляет суффикс к имени для уникальности.
+        Возвращает True, если изображение прикреплено.
+        """
         extensions = ['.webp', '.jpg', '.png']
         for ext in extensions:
             full_path = base_path + ext

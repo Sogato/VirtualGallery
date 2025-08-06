@@ -1,10 +1,9 @@
-<!-- templates/core/painting_list.html -->
 {% extends 'base.html' %}
 
 {% block title %}Галерея{% endblock %}
 
 {% block content %}
-    <!-- Gallery Hero Section -->
+    <!-- Секция героя галереи -->
     <section class="gallery-hero">
         <div class="hero-background">
             <div class="hero-pattern"></div>
@@ -24,7 +23,7 @@
         </div>
     </section>
 
-    <!-- Paintings Grid Section -->
+    <!-- Секция сетки картин -->
     <section class="paintings-grid-section">
         <div class="container">
             {% if paintings %}
@@ -80,7 +79,7 @@
                     {% endfor %}
                 </div>
 
-                <!-- Modern Pagination -->
+                <!-- Современная пагинация -->
                 {% if is_paginated %}
                     <nav class="pagination-wrapper" aria-label="Навигация по страницам">
                         <ul class="modern-pagination">
@@ -121,6 +120,7 @@
                     </nav>
                 {% endif %}
             {% else %}
+                <!-- Сообщение при пустой галерее -->
                 <div class="empty-gallery">
                     <div class="empty-icon">
                         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -139,38 +139,38 @@
 
 {% block extra_js %}
     <script>
-        // Improved animation trigger
         document.addEventListener('DOMContentLoaded', function() {
-            // Get all painting items
+            // Получение всех элементов картин
             const paintingItems = document.querySelectorAll('.painting-item');
 
-            // Create intersection observer with better settings
+            // Настройки для IntersectionObserver
             const observerOptions = {
                 root: null,
-                rootMargin: '100px 0px', // Start animation 100px before element is visible
-                threshold: 0.1 // Trigger when 10% of element is visible
+                rootMargin: '100px 0px', // Запуск анимации за 100px до видимости
+                threshold: 0.1 // Срабатывание при 10% видимости элемента
             };
 
+            // Создание observer для анимаций
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry, index) => {
                     if (entry.isIntersecting) {
-                        // Add staggered delay for smooth cascade effect
+                        // Добавление staggered-эффекта с задержкой
                         setTimeout(() => {
                             entry.target.classList.add('aos-animate');
-                        }, index * 50); // 50ms delay between each item
+                        }, index * 50); // Задержка 50ms между элементами
 
-                        // Stop observing once animated
+                        // Прекращение наблюдения после анимации
                         observer.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
 
-            // Observe all painting items
+            // Наблюдение за всеми элементами
             paintingItems.forEach(item => {
                 observer.observe(item);
             });
 
-            // Also handle any items already in viewport on load
+            // Обработка элементов, уже видимых при загрузке (с staggered-эффектом)
             setTimeout(() => {
                 paintingItems.forEach((item, index) => {
                     const rect = item.getBoundingClientRect();

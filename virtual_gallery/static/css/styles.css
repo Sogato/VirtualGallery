@@ -1219,7 +1219,7 @@ img[data-lazy].loaded {
     display: block;
     font-family: 'Inter', sans-serif;
     font-size: 0.75rem;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.7);
     margin-top: 0.25rem;
 }
 
@@ -2207,6 +2207,14 @@ html {
 
 /* Mobile carousel button fix */
 @media (max-width: 767px) {
+    html {
+        font-size: 16px;
+    }
+
+    .artist-subtitle {
+        font-size: 12px;
+    }
+
     .featured-carousel-container {
         margin: 0;
         padding: 10px 0 20px;

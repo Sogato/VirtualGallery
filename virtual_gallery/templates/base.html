@@ -1,11 +1,13 @@
-<!-- templates/core/base.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Мета-теги и заголовок -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Виртуальная Галерея{% endblock %}</title>
+
+    <!-- Внешние стили и шрифты -->
     <!-- Bootstrap 5 CSS via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Google Fonts -->
@@ -14,9 +16,11 @@
     <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Шапка сайта с навигацией -->
     <header class="main-header">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
@@ -48,23 +52,27 @@
         </nav>
     </header>
 
+    <!-- Основное содержимое страницы -->
     <main class="main-content">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
+    <!-- Футер сайта -->
     <footer class="main-footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-copyright">© {% now "Y" %} Художественная Галерея. Все права защищены.</p>
+                <p class="footer-copyright">© {% now "Y" %} Виртуальная Галерея. Права на домен и контент принадлежат
+                владельцу.</p>
             </div>
         </div>
     </footer>
 
+    <!-- Внешние скрипты -->
     <!-- Bootstrap 5 JS via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- Main JS -->
     <script src="{% static 'js/main.js' %}"></script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

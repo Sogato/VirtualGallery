@@ -1,10 +1,9 @@
-<!-- templates/core/blog_list.html -->
 {% extends 'base.html' %}
 
-{% block title %}Блог{% endblock %}
+{% block title %}Блог художника{% endblock %}
 
 {% block content %}
-    <!-- Blog Hero Section -->
+    <!-- Секция героя блога -->
     <section class="blog-hero">
         <div class="container">
             <div class="blog-hero-content" data-aos>
@@ -14,7 +13,7 @@
         </div>
     </section>
 
-    <!-- Blog List Section: Feed-style vertical list with floating images -->
+    <!-- Секция списка постов блога (вертикальный фид с плавающими изображениями) -->
     <section class="blog-section py-5">
         <div class="container">
             {% if posts %}
@@ -65,7 +64,7 @@
                     </article>
                 {% endfor %}
 
-                <!-- Modern Pagination -->
+                <!-- Современная пагинация -->
                 {% if is_paginated %}
                     <nav class="blog-pagination-wrapper" aria-label="Навигация по блогу">
                         <div class="blog-pagination">
@@ -98,6 +97,7 @@
                     </nav>
                 {% endif %}
             {% else %}
+                <!-- Сообщение при отсутствии постов -->
                 <div class="empty-blog-state text-center py-5">
                     <p class="empty-blog-message">Нет постов в блоге на данный момент.</p>
                     <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">На главную</a>
@@ -107,8 +107,8 @@
     </section>
 
     <script>
-        // Инициализация слайдеров после загрузки страницы
         document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация всех слайдеров изображений в постах
             const sliders = document.querySelectorAll('.blog-image-slider');
 
             sliders.forEach(slider => {
@@ -117,20 +117,21 @@
                 const sliderContainer = slider.querySelector('.slider-container');
                 const sliderWrapper = slider.querySelector('.slider-wrapper');
 
-                // Проверяем количество изображений и добавляем класс для одиночных изображений
+                // Проверка количества изображений и добавление класса для одиночных изображений
                 if (images.length <= 1) {
                     slider.classList.add('single-image');
                 }
 
-                // Touch swipe functionality
+                // Переменные для тач-свайпа
                 let touchStartX = 0;
                 let touchEndX = 0;
                 let currentIndex = 0;
 
-                // Mouse hover functionality for desktop
+                // Переменные для мыши (для десктопа)
                 let mouseX = 0;
                 let isMouseOverImage = false;
 
+                // Функция для переключения изображения по индексу
                 function switchToImage(index) {
                     images.forEach(img => img.classList.remove('active'));
                     indicators.forEach(ind => ind.classList.remove('active'));
@@ -144,7 +145,7 @@
                     currentIndex = index;
                 }
 
-                // Click handlers for indicators
+                // Обработчики кликов по индикаторам
                 indicators.forEach((indicator, index) => {
                     indicator.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -152,7 +153,7 @@
                     });
                 });
 
-                // Mouse movement over image for desktop switching
+                // Обработка движения мыши для десктопа (если больше 1 изображения и ширина > 768px)
                 if (images.length > 1 && window.innerWidth > 768) {
                     sliderWrapper.addEventListener('mouseenter', function() {
                         isMouseOverImage = true;
@@ -176,7 +177,7 @@
                     });
                 }
 
-                // Touch events for swipe
+                // Обработка тач-событий для свайпа (если поддерживается тач)
                 if ('ontouchstart' in window) {
                     sliderContainer.addEventListener('touchstart', function(e) {
                         touchStartX = e.changedTouches[0].screenX;
@@ -187,16 +188,17 @@
                         handleSwipe();
                     }, { passive: true });
 
+                    // Функция обработки свайпа
                     function handleSwipe() {
                         const swipeThreshold = 50;
                         const diff = touchStartX - touchEndX;
 
                         if (Math.abs(diff) > swipeThreshold) {
                             if (diff > 0 && currentIndex < images.length - 1) {
-                                // Swipe left - next image
+                                // Свайп влево - следующее изображение
                                 switchToImage(currentIndex + 1);
                             } else if (diff < 0 && currentIndex > 0) {
-                                // Swipe right - previous image
+                                // Свайп вправо - предыдущее изображение
                                 switchToImage(currentIndex - 1);
                             }
                         }

@@ -1,10 +1,9 @@
-<!-- templates/core/painting_detail.html -->
 {% extends 'base.html' %}
 
 {% block title %}{{ object.title }}{% endblock %}
 
 {% block content %}
-    <!-- Breadcrumb Navigation -->
+    <!-- Навигация хлебных крошек -->
     <nav class="breadcrumb-nav" aria-label="breadcrumb">
         <div class="container">
             <ol class="modern-breadcrumb">
@@ -15,11 +14,11 @@
         </div>
     </nav>
 
-    <!-- Painting Detail Section -->
+    <!-- Секция детальной информации о картине -->
     <section class="painting-detail-section">
         <div class="container">
             <div class="row g-5">
-                <!-- Image Column -->
+                <!-- Колонка с изображением -->
                 <div class="col-lg-8">
                     <div class="painting-image-showcase" data-aos="fade-right">
                         <div class="image-container">
@@ -36,7 +35,7 @@
                     </div>
                 </div>
 
-                <!-- Info Column -->
+                <!-- Колонка с информацией -->
                 <div class="col-lg-4">
                     <div class="painting-info-panel" data-aos="fade-left">
                         <div class="info-content">
@@ -91,7 +90,7 @@
                                     </a>
                                 {% else %}
                                     <a href="{% url 'contacts' %}?painting={{ object.slug }}"
-                                       class="btn btn-outline-primary btn-detail">
+                                       class="btn btn-outline-secondary btn-detail">
                                         <span>Узнать о работе</span>
                                     </a>
                                 {% endif %}
@@ -111,7 +110,7 @@
         </div>
     </section>
 
-    <!-- Lightbox Modal -->
+    <!-- Лайтбокс для увеличения изображения -->
     <div id="imageLightbox" class="lightbox-overlay" onclick="closeLightbox()">
         <div class="lightbox-content">
             <img src="{{ object.large_image.url }}" alt="{{ object.title }}">
@@ -123,7 +122,7 @@
         </div>
     </div>
 
-    <!-- Related Works (Optional) -->
+    <!-- Секция связанных работ (опционально) -->
     {% if related_paintings %}
     <section class="related-works-section">
         <div class="container">
@@ -150,24 +149,26 @@
 
 {% block extra_js %}
     <script>
+        // Функция для открытия лайтбокса
         function openLightbox() {
             document.getElementById('imageLightbox').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
+        // Функция для закрытия лайтбокса
         function closeLightbox() {
             document.getElementById('imageLightbox').classList.remove('active');
             document.body.style.overflow = '';
         }
 
-        // Close lightbox with Escape key
+        // Закрытие лайтбокса по клавише Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeLightbox();
             }
         });
 
-        // Prevent closing when clicking on image
+        // Предотвращение закрытия при клике на изображение
         document.querySelector('.lightbox-content img').addEventListener('click', function(e) {
             e.stopPropagation();
         });

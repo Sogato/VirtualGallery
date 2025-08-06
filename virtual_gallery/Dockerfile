@@ -8,24 +8,21 @@ ENV PYTHONUNBUFFERED=1
 # Рабочая директория
 WORKDIR /app
 
-# Устанавливаем зависимости
+# Установка зависимостей
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем исходники
+# Копирование исходников
 COPY . /app/
 
-# Устанавливаем переменные для production
+# Установка переменных для production
 ENV DJANGO_SETTINGS_MODULE=virtual_gallery.settings.prod
 
-# Собираем статику
+# Сбор статики
 RUN python manage.py collectstatic --noinput
 
-# Копируем статику в путь, который использует nginx
-RUN mkdir -p /usr/share/nginx/html/static && cp -r staticfiles/* /usr/share/nginx/html/static/
-
-# Открываем порт
+# Открытие порта
 EXPOSE 8000
 
-# Запуск gunicorn
+# Запуск Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "virtual_gallery.wsgi:application"]
