@@ -1,118 +1,274 @@
-<!-- templates/core/home.html -->
 {% extends 'base.html' %}
 
-{% block title %}Главная - Галерея Художника{% endblock %}
-
-{% block extra_css %}
-    <!-- Google Fonts for modern typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-{% endblock %}
+{% block title %}Главная страница{% endblock %}
 
 {% block content %}
-    <!-- Artist Section: Modern layout with image left, text right -->
-    <section class="artist-section py-5">
-        <div class="row align-items-center">
-            {% if artist.photo %}
-                <div class="col-md-4">
-                    <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="img-fluid rounded shadow artist-photo">
+    <!-- Секция героя с информацией о художнике (полноэкранная) -->
+    <section class="hero-section full-viewport">
+        <div class="container h-100">
+            <div class="row g-0 align-items-center h-100">
+                <div class="col-lg-6 order-2 order-lg-1 h-100 d-flex align-items-center">
+                    <div class="artist-content">
+                        <h1 class="artist-name-hero">
+                            <span class="name-line">{{ artist.name }}</span>
+                            <span class="artist-subtitle">Художник</span>
+                        </h1>
+                        <div class="bio-wrapper">
+                            <p class="artist-bio-text">{{ artist.bio }}</p>
+                        </div>
+                        <!-- Изображение художника для мобильных устройств -->
+                        <div class="d-lg-none mobile-artist-image">
+                            {% if artist.photo %}
+                                <div class="artist-image-wrapper">
+                                    <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-hero-image">
+                                </div>
+                            {% else %}
+                                <div class="artist-image-wrapper no-photo">
+                                    <div class="image-placeholder"></div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="hero-actions">
+                            <a href="{% url 'painting_list' %}" class="btn btn-primary btn-hero">Смотреть работы</a>
+                            <a href="{% url 'contacts' %}" class="btn btn-outline-dark btn-hero">Связаться</a>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
-            <div class="col-md-8">
-                <h1 class="display-4 artist-name">{{ artist.name }}</h1>
-                <p class="lead artist-bio">{{ artist.bio }}</p>
+                <div class="col-lg-6 order-1 order-lg-2 h-100 d-flex align-items-center d-none d-lg-flex">
+                    {% if artist.photo %}
+                        <div class="artist-image-wrapper">
+                            <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-hero-image">
+                        </div>
+                    {% else %}
+                        <div class="artist-image-wrapper no-photo">
+                            <div class="image-placeholder"></div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
         </div>
     </section>
 
-    <!-- Visual separator -->
-    <hr class="my-5 separator">
+    <!-- Секция избранных работ -->
+    <section class="featured-section" data-aos>
+        <div class="container">
+            <div class="section-header text-center" data-aos>
+                <h2 class="section-title">
+                    <span class="title-decoration">Избранные работы</span>
+                </h2>
+                <p class="section-subtitle">Коллекция лучших произведений</p>
+            </div>
 
-    <!-- Featured Paintings: Conditional rendering - carousel if >3, static grid if 1-3, message if 0 -->
-    <section class="featured-section py-5">
-        <h2 class="text-center mb-4 section-title">Избранные картины</h2>
-        {% if featured_paintings.exists %}
-            {% if featured_paintings.count > 3 %}
-                <!-- Carousel for >3 paintings with external controls -->
-                <div class="carousel-container position-relative">
-                    <div id="featuredCarousel" class="carousel slide carousel-multi-item" data-bs-ride="carousel">
-                        <div class="carousel-inner" role="listbox">
+            {% if featured_paintings.exists %}
+                {% if featured_paintings.count > 3 %}
+                    <!-- Данные о картинах для JavaScript (в формате JSON) -->
+                    <script type="application/json" id="featured-paintings-data">
+                    [
+                        {% for painting in featured_paintings %}
+                        {
+                            "slug": "{{ painting.slug }}",
+                            "title": "{{ painting.title|escapejs }}",
+                            "image_url": "{{ painting.medium_image.url }}",
+                            "detail_url": "{% url 'painting_detail' painting.slug %}"
+                        }{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ]
+                    </script>
+
+                    <!-- Контейнер для карусели с внешними кнопками навигации -->
+                    <div class="featured-carousel-container">
+                        <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner" id="carousel-inner-container">
+                                <!-- Слайды генерируются динамически через JS -->
+                            </div>
+                        </div>
+
+                        <!-- Внешние кнопки навигации -->
+                        <button class="carousel-nav-external prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <button class="carousel-nav-external next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                {% else %}
+                    <!-- Статическая сетка для 1-3 картин -->
+                    <div class="featured-static-grid">
+                        <div class="row g-4 justify-content-center">
                             {% for painting in featured_paintings %}
-                                {% if forloop.counter0|divisibleby:3 %}
-                                    <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
-                                        <div class="row">
-                                {% endif %}
-                                            <div class="col-md-4">
-                                                <a href="{% url 'painting_detail' painting.slug %}" class="featured-link">
-                                                    <img src="{{ painting.medium_image.url }}" class="img-fluid featured-img" alt="{{ painting.title }}">
-                                                    <h5 class="featured-title mt-2 text-center">{{ painting.title }}</h5>
-                                                </a>
+                                <div class="col-lg-4 col-md-6">
+                                    <a href="{% url 'painting_detail' painting.slug %}" class="painting-card-link">
+                                        <div class="painting-card featured-home-card">
+                                            <div class="painting-image-wrapper">
+                                                <img src="{{ painting.medium_image.url }}"
+                                                     class="painting-image"
+                                                     alt="{{ painting.title }}"
+                                                     loading="lazy">
+                                                <div class="painting-hover-overlay">
+                                                    <div class="overlay-content">
+                                                        <span class="view-icon">
+                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>
+                                                        </span>
+                                                        <span class="view-text">Подробнее</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                {% if forloop.counter|divisibleby:3 or forloop.last %}
+                                            <div class="painting-details featured-home-details">
+                                                <h3 class="painting-name">{{ painting.title }}</h3>
+                                            </div>
                                         </div>
-                                    </div>
-                                {% endif %}
+                                    </a>
+                                </div>
                             {% endfor %}
                         </div>
                     </div>
-                    <!-- External Controls positioned outside carousel -->
-                    <button class="carousel-control-prev carousel-external-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next carousel-external-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
+                {% endif %}
             {% else %}
-                <!-- Static grid for 1-3 paintings, no carousel -->
-                <div class="row justify-content-center">
-                    {% for painting in featured_paintings %}
-                        <div class="col-md-4">
-                            <a href="{% url 'painting_detail' painting.slug %}" class="featured-link">
-                                <img src="{{ painting.medium_image.url }}" class="img-fluid featured-img" alt="{{ painting.title }}">
-                                <h5 class="featured-title mt-2 text-center">{{ painting.title }}</h5>
-                            </a>
-                        </div>
-                    {% endfor %}
+                <!-- Сообщение при отсутствии избранных работ -->
+                <div class="empty-state text-center">
+                    <p class="empty-message">В данный момент нет избранных работ</p>
+                    <a href="{% url 'painting_list' %}" class="btn btn-outline-primary mt-3">Посмотреть все работы</a>
                 </div>
             {% endif %}
-        {% else %}
-            <p class="text-center">Нет избранных картин на данный момент.</p>
-        {% endif %}
+        </div>
+    </section>
+
+    <!-- Секция призыва к действию (CTA) -->
+    <section class="cta-section" data-aos>
+        <div class="container">
+            <div class="cta-content text-center">
+                <h3 class="cta-title">Откройте для себя мир искусства</h3>
+                <p class="cta-text">Исследуйте полную коллекцию произведений в галерее</p>
+                <a href="{% url 'painting_list' %}" class="btn btn-light btn-lg">Перейти в галерею</a>
+            </div>
+        </div>
     </section>
 {% endblock %}
 
 {% block extra_js %}
-    <!-- Custom JS for carousel: init, auto-slide, and fill last slide with clones for cycling -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const featuredCarouselElement = document.querySelector('#featuredCarousel');
-            if (featuredCarouselElement) {
-                // Fill the last slide with clones from the beginning if needed
-                const inner = featuredCarouselElement.querySelector('.carousel-inner');
-                const items = inner.querySelectorAll('.carousel-item');
-                if (items.length > 1) {  // Only if multiple groups
-                    const lastItem = items[items.length - 1];
-                    const lastRow = lastItem.querySelector('.row');
-                    const lastCols = lastRow.querySelectorAll('.col-md-4');
-                    if (lastCols.length < 3) {
-                        const fillCount = 3 - lastCols.length;
-                        const firstItem = items[0];
-                        const firstCols = firstItem.querySelectorAll('.col-md-4');
-                        for (let i = 0; i < fillCount; i++) {
-                            const clone = firstCols[i].cloneNode(true);
-                            lastRow.appendChild(clone);
-                        }
-                    }
-                }
+            // Получение данных о картинах из JSON-элемента
+            const paintingsDataElement = document.getElementById('featured-paintings-data');
+            if (paintingsDataElement) {
+                const paintings = JSON.parse(paintingsDataElement.textContent);
+                const carouselInner = document.getElementById('carousel-inner-container');
 
-                // Initialize carousel
-                const carousel = new bootstrap.Carousel(featuredCarouselElement, {
-                    interval: 5000,  // Auto-slide every 5 seconds
-                    wrap: true,      // Loop back
-                    touch: true      // Enable touch swipe
-                });
+                if (paintings.length > 3 && carouselInner) {
+                    // Функция для определения конфигурации слайда в зависимости от ширины экрана
+                    const getSlideConfig = () => {
+                        const width = window.innerWidth;
+                        if (width < 768) return { perSlide: 1, class: 'col-12' };
+                        if (width < 992) return { perSlide: 2, class: 'col-6' };
+                        return { perSlide: 3, class: 'col-lg-4' };
+                    };
+
+                    // Функция для генерации слайдов карусели
+                    const generateSlides = () => {
+                        // Очистка существующих слайдов
+                        carouselInner.innerHTML = '';
+
+                        const config = getSlideConfig();
+                        const paintingsPerSlide = config.perSlide;
+                        const colClass = config.class;
+
+                        const totalPaintings = paintings.length;
+                        const slidesNeeded = Math.ceil((totalPaintings * 3) / paintingsPerSlide);
+
+                        // Создание циклического массива картин для бесконечной карусели
+                        const cycledPaintings = [];
+                        for (let i = 0; i < slidesNeeded * paintingsPerSlide; i++) {
+                            cycledPaintings.push(paintings[i % totalPaintings]);
+                        }
+
+                        // Генерация слайдов
+                        for (let slideIndex = 0; slideIndex < slidesNeeded; slideIndex++) {
+                            const slideDiv = document.createElement('div');
+                            slideDiv.className = `carousel-item ${slideIndex === 0 ? 'active' : ''}`;
+
+                            const slideContent = document.createElement('div');
+                            slideContent.className = 'carousel-slide';
+
+                            const row = document.createElement('div');
+                            row.className = 'row g-4';
+
+                            // Добавление картин в текущий слайд
+                            for (let i = 0; i < paintingsPerSlide; i++) {
+                                const paintingIndex = slideIndex * paintingsPerSlide + i;
+                                const painting = cycledPaintings[paintingIndex];
+
+                                const col = document.createElement('div');
+                                col.className = colClass;
+                                col.innerHTML = `
+                                    <a href="${painting.detail_url}" class="painting-card-link">
+                                        <div class="painting-card featured-home-card">
+                                            <div class="painting-image-wrapper">
+                                                <img src="${painting.image_url}"
+                                                     class="painting-image"
+                                                     alt="${painting.title}"
+                                                     loading="lazy">
+                                                <div class="painting-hover-overlay">
+                                                    <div class="overlay-content">
+                                                        <span class="view-icon">
+                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>
+                                                        </span>
+                                                        <span class="view-text">Подробнее</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="painting-details featured-home-details">
+                                                <h3 class="painting-name">${painting.title}</h3>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `;
+                                row.appendChild(col);
+                            }
+
+                            slideContent.appendChild(row);
+                            slideDiv.appendChild(slideContent);
+                            carouselInner.appendChild(slideDiv);
+                        }
+                    };
+
+                    // Изначальная генерация слайдов
+                    generateSlides();
+
+                    // Регенерация слайдов при ресайзе с debounce
+                    let resizeTimer;
+                    window.addEventListener('resize', () => {
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(() => {
+                            generateSlides();
+                            // Переинициализация карусели после регенерации
+                            const carousel = bootstrap.Carousel.getInstance(document.getElementById('featuredCarousel'));
+                            if (carousel) {
+                                carousel.to(0);
+                            }
+                        }, 250);
+                    });
+
+                    // Инициализация Bootstrap Carousel
+                    const carousel = new bootstrap.Carousel(document.getElementById('featuredCarousel'), {
+                        interval: 4000,
+                        wrap: true,
+                        touch: true,
+                        pause: 'hover'
+                    });
+                }
             }
         });
     </script>

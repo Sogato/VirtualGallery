@@ -1,26 +1,36 @@
-<!-- templates/core/base.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Мета-теги и заголовок -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Галерея Художника{% endblock %}</title>
+    <title>{% block title %}Виртуальная Галерея{% endblock %}</title>
+
+    <!-- Внешние стили и шрифты -->
     <!-- Bootstrap 5 CSS via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Favicon -->
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'home' %}">Галерея Художника</a>  <!-- Заголовок, можно динамически из Artist.name если нужно -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    <!-- Шапка сайта с навигацией -->
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <span class="brand-text">Виртуальная Галерея</span>
+                </a>
+                <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="toggler-icon"></span>
+                    <span class="toggler-icon"></span>
+                    <span class="toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
@@ -42,25 +52,27 @@
         </nav>
     </header>
 
-    <main class="container my-4 flex-grow-1">
-        {% block content %}
-        {% endblock %}
+    <!-- Основное содержимое страницы -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-light text-center py-3">
-        <p>© {% now "Y" %} Галерея Художника. Все права защищены.</p>
-        <!-- Можно добавить динамические контакты из SiteContact -->
-        {% with site_contact=SiteContact.objects.first %}
-            {% if site_contact %}
-                <p>Телефон: {{ site_contact.phone }} | Email: {{ site_contact.email }}</p>
-            {% endif %}
-        {% endwith %}
+    <!-- Футер сайта -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-copyright">© {% now "Y" %} Виртуальная Галерея. Права на домен и контент принадлежат
+                владельцу.</p>
+            </div>
+        </div>
     </footer>
 
+    <!-- Внешние скрипты -->
     <!-- Bootstrap 5 JS via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- Custom JS -->
-    <script src="{% static 'js/custom.js' %}"></script>
+    <!-- Main JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

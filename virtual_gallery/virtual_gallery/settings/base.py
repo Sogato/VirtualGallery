@@ -1,13 +1,13 @@
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent  # На один уровень выше, т.к. теперь в подпапке
+# Базовый путь проекта: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # На один уровень выше, т.к. настройки в подпапке
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')  # Берем из .env
+# ПРЕДУПРЕЖДЕНИЕ БЕЗОПАСНОСТИ: храните секретный ключ в секрете в production!
+SECRET_KEY = os.environ.get('SECRET_KEY')  # Берется из переменных окружения (.env)
 
-# Application definition
+# Список установленных приложений
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -15,10 +15,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',  # Для улучшения виджетов форм в шаблонах
 
-    'core',
+    'core',  # Основное приложение галереи
 ]
 
+# Middleware: обработчики запросов
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -27,14 +29,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'core.middleware.IgnoreDevToolsRequestMiddleware',  # Кастомный middleware для игнора DevTools
 ]
 
+# Корневой URL-конфиг
 ROOT_URLCONF = 'virtual_gallery.urls'
 
+# Настройки шаблонов
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],  # Путь к общим шаблонам проекта
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -46,9 +52,10 @@ TEMPLATES = [
     },
 ]
 
+# WSGI-приложение
 WSGI_APPLICATION = 'virtual_gallery.wsgi.application'
 
-# Password validation
+# Валидаторы паролей
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -64,23 +71,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-LANGUAGE_CODE = 'ru-ru'  # Поменял на русский, т.к. галерея на русском
-
-TIME_ZONE = 'Asia/Novosibirsk'
+# Интернационализация
+LANGUAGE_CODE = 'ru-ru'  # Русский язык по умолчанию
+TIME_ZONE = 'Asia/Novosibirsk'  # Часовой пояс (Новосибирск)
 
 USE_I18N = True
-
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Статические файлы (CSS, JS, изображения)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Добавь это: путь к static в dev (твоя папка static/)
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Измени на 'staticfiles' для prod collectstatic
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Путь к статическим файлам в разработке
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Путь для collectstatic в production
 
-# Media files (для картинок в галерее)
+# Медиа-файлы (загруженные изображения)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
+# Тип первичного ключа по умолчанию
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

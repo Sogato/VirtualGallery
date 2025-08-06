@@ -1,40 +1,176 @@
-<!-- templates/core/painting_detail.html -->
 {% extends 'base.html' %}
 
-{% block title %}{{ object.title }} - Галерея Художника{% endblock %}
+{% block title %}{{ object.title }}{% endblock %}
 
 {% block content %}
-    <!-- Painting Detail Section: Modern layout with large image and info side-by-side -->
-    <section class="painting-detail-section py-5">
-        <div class="row">
-            <div class="col-lg-8">
-                <img src="{{ object.large_image.url }}" class="img-fluid painting-large-img rounded shadow mb-4" alt="{{ object.title }}" loading="lazy">
-            </div>
-            <div class="col-lg-4">
-                <div class="painting-info sticky-top">
-                    <h1 class="painting-title mb-3">{{ object.title }}</h1>
-                    <p class="painting-description lead mb-4">{{ object.description }}</p>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><strong>Дата создания:</strong> {{ object.creation_date|date:"d F Y" }}</li>
-                        <li class="mb-2">
-                            <strong>Цена:</strong>
-                            {% if object.price %}
-                                {{ object.price }} руб.
-                            {% else %}
-                                Не продается
+    <!-- Навигация хлебных крошек -->
+    <nav class="breadcrumb-nav" aria-label="breadcrumb">
+        <div class="container">
+            <ol class="modern-breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'painting_list' %}">Галерея</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ object.title }}</li>
+            </ol>
+        </div>
+    </nav>
+
+    <!-- Секция детальной информации о картине -->
+    <section class="painting-detail-section">
+        <div class="container">
+            <div class="row g-5">
+                <!-- Колонка с изображением -->
+                <div class="col-lg-8">
+                    <div class="painting-image-showcase" data-aos="fade-right">
+                        <div class="image-container">
+                            <img src="{{ object.large_image.url }}"
+                                 class="painting-showcase-img"
+                                 alt="{{ object.title }}"
+                                 loading="lazy">
+                            <button class="image-zoom-btn" onclick="openLightbox()" aria-label="Увеличить изображение">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Колонка с информацией -->
+                <div class="col-lg-4">
+                    <div class="painting-info-panel" data-aos="fade-left">
+                        <div class="info-content">
+                            <h1 class="detail-painting-title">{{ object.title }}</h1>
+
+                            {% if object.description %}
+                                <div class="painting-description-block">
+                                    <p class="detail-painting-description">{{ object.description }}</p>
+                                </div>
                             {% endif %}
-                        </li>
-                    </ul>
-                    <div class="mt-4">
-                        {% if object.price %}
-                            <a href="{% url 'contacts' %}?painting={{ object.slug }}" class="btn btn-primary btn-lg w-100 mb-2">Купить</a>
-                        {% else %}
-                            <a href="{% url 'contacts' %}?painting={{ object.slug }}" class="btn btn-outline-primary btn-lg w-100 mb-2">Связаться по поводу картины</a>
-                        {% endif %}
-                        <a href="{% url 'painting_list' %}" class="btn btn-secondary btn-lg w-100">Назад в галерею</a>
+
+                            <div class="painting-metadata">
+                                <div class="meta-item">
+                                    <span class="meta-label">Дата создания</span>
+                                    <span class="meta-value">{{ object.creation_date|date:"d E Y" }}</span>
+                                </div>
+
+                                {% if object.size %}
+                                    <div class="meta-item">
+                                        <span class="meta-label">Размер</span>
+                                        <span class="meta-value">{{ object.size }}</span>
+                                    </div>
+                                {% endif %}
+
+                                {% if object.technique %}
+                                    <div class="meta-item">
+                                        <span class="meta-label">Техника</span>
+                                        <span class="meta-value">{{ object.technique }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="price-section">
+                                {% if object.price %}
+                                    <div class="price-block available">
+                                        <span class="price-label-detail">Цена</span>
+                                        <span class="price-amount">{{ object.price|floatformat:0 }} ₽</span>
+                                    </div>
+                                {% else %}
+                                    <div class="price-block not-available">
+                                        <span class="status-text">Не продается</span>
+                                        <span class="status-subtext">Работа из частной коллекции</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="action-buttons">
+                                {% if object.price %}
+                                    <a href="{% url 'contacts' %}?painting={{ object.slug }}"
+                                       class="btn btn-primary btn-detail btn-purchase">
+                                        <span>Приобрести работу</span>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'contacts' %}?painting={{ object.slug }}"
+                                       class="btn btn-outline-secondary btn-detail">
+                                        <span>Узнать о работе</span>
+                                    </a>
+                                {% endif %}
+
+                                <a href="{% url 'painting_list' %}"
+                                   class="btn btn-outline-secondary btn-detail">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>Вернуться в галерею</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Лайтбокс для увеличения изображения -->
+    <div id="imageLightbox" class="lightbox-overlay" onclick="closeLightbox()">
+        <div class="lightbox-content">
+            <img src="{{ object.large_image.url }}" alt="{{ object.title }}">
+            <button class="lightbox-close" onclick="closeLightbox()" aria-label="Закрыть">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Секция связанных работ (опционально) -->
+    {% if related_paintings %}
+    <section class="related-works-section">
+        <div class="container">
+            <h2 class="related-title">Другие работы</h2>
+            <div class="related-grid">
+                {% for painting in related_paintings|slice:":4" %}
+                    <div class="related-item">
+                        <a href="{% url 'painting_detail' painting.slug %}" class="related-link">
+                            <div class="related-image-wrapper">
+                                <img src="{{ painting.small_image.url }}" alt="{{ painting.title }}" loading="lazy">
+                                <div class="related-overlay">
+                                    <span class="related-view">Смотреть</span>
+                                </div>
+                            </div>
+                            <h4 class="related-painting-title">{{ painting.title }}</h4>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Функция для открытия лайтбокса
+        function openLightbox() {
+            document.getElementById('imageLightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Функция для закрытия лайтбокса
+        function closeLightbox() {
+            document.getElementById('imageLightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Закрытие лайтбокса по клавише Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // Предотвращение закрытия при клике на изображение
+        document.querySelector('.lightbox-content img').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    </script>
 {% endblock %}

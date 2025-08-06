@@ -1,62 +1,186 @@
-<!-- templates/core/painting_list.html -->
 {% extends 'base.html' %}
 
-{% block title %}Галерея - Галерея Художника{% endblock %}
+{% block title %}Галерея{% endblock %}
 
 {% block content %}
-    <!-- Paintings List Section: Modern grid layout with responsive cards -->
-    <section class="paintings-section py-5">
-        <h2 class="text-center mb-5 section-title">Галерея картин</h2>
-        {% if paintings %}
-            <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-                {% for painting in paintings %}
-                    <div class="col">
-                        <a href="{% url 'painting_detail' painting.slug %}" class="painting-link d-block text-decoration-none">
-                            <div class="painting-card shadow-lg rounded overflow-hidden">
-                                <img src="{{ painting.small_image.url }}" class="img-fluid painting-img" alt="{{ painting.title }}">
-                                <div class="painting-info p-3 text-center">
-                                    <h5 class="painting-title mb-1">{{ painting.title }}</h5>
-                                    <p class="painting-date mb-1 small text-muted">{{ painting.creation_date|date:"Y" }}</p>
-                                    {% if painting.price %}
-                                        <p class="painting-price mb-0 font-weight-bold">{{ painting.price }} руб.</p>
-                                    {% else %}
-                                        <p class="painting-price mb-0 font-weight-bold text-secondary">Не продается</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                {% endfor %}
+    <!-- Секция героя галереи -->
+    <section class="gallery-hero">
+        <div class="hero-background">
+            <div class="hero-pattern"></div>
+        </div>
+        <div class="container">
+            <div class="gallery-hero-content">
+                <h1 class="gallery-title" data-aos>Галерея работ</h1>
+                <p class="gallery-subtitle" data-aos>Исследуйте коллекцию произведений</p>
+                <div class="hero-decoration" data-aos>
+                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                        <rect x="10" y="10" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+                        <rect x="5" y="5" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+                        <rect x="15" y="15" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                </div>
             </div>
-
-            <!-- Pagination if needed -->
-            {% if is_paginated %}
-                <nav aria-label="Pagination" class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
-                        {% endif %}
-
-                        {% for i in paginator.page_range %}
-                            {% if page_obj.number == i %}
-                                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if page_obj.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">Следующая</span></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
-        {% else %}
-            <p class="text-center">Нет картин в галерее на данный момент.</p>
-        {% endif %}
+        </div>
     </section>
+
+    <!-- Секция сетки картин -->
+    <section class="paintings-grid-section">
+        <div class="container">
+            {% if paintings %}
+                <div class="paintings-grid">
+                    {% for painting in paintings %}
+                        <div class="painting-item" data-aos>
+                            <a href="{% url 'painting_detail' painting.slug %}" class="painting-card-link">
+                                <div class="painting-card gallery-card">
+                                    {% if painting.is_featured %}
+                                        <div class="featured-badge">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M8 1L10.163 5.366L15 6.089L11.5 9.495L12.326 14.31L8 12.039L3.674 14.31L4.5 9.495L1 6.089L5.837 5.366L8 1Z" fill="currentColor"/>
+                                            </svg>
+                                            <span>Избранное</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="painting-image-wrapper">
+                                        <img src="{{ painting.small_image.url }}"
+                                             class="painting-image"
+                                             alt="{{ painting.title }}"
+                                             loading="lazy">
+                                        <div class="painting-hover-overlay">
+                                            <div class="overlay-content">
+                                                <span class="view-icon">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                </span>
+                                                <span class="view-text">Подробнее</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="painting-details">
+                                        <h3 class="painting-name">{{ painting.title }}</h3>
+                                        <div class="painting-info-row">
+                                            <span class="painting-year">{{ painting.creation_date|date:"Y" }} год</span>
+                                        </div>
+                                        <div class="painting-price-row">
+                                            {% if painting.price %}
+                                                <div class="price-wrapper">
+                                                    <span class="price-label-list">Цена:</span>
+                                                    <span class="price-value">{{ painting.price|floatformat:0 }} ₽</span>
+                                                </div>
+                                            {% else %}
+                                                <span class="not-for-sale">Не продается</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Современная пагинация -->
+                {% if is_paginated %}
+                    <nav class="pagination-wrapper" aria-label="Навигация по страницам">
+                        <ul class="modern-pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link prev" href="?page={{ page_obj.previous_page_number }}">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span class="page-link-text">Назад</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-numbers">
+                                {% for i in paginator.page_range %}
+                                    {% if page_obj.number == i %}
+                                        <span class="page-number active">{{ i }}</span>
+                                    {% elif i == 1 or i == paginator.num_pages or i >= page_obj.number|add:"-2" and i <= page_obj.number|add:"2" %}
+                                        <a class="page-number" href="?page={{ i }}">{{ i }}</a>
+                                    {% elif i == page_obj.number|add:"-3" or i == page_obj.number|add:"3" %}
+                                        <span class="page-ellipsis">...</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link next" href="?page={{ page_obj.next_page_number }}">
+                                        <span class="page-link-text">Вперед</span>
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <!-- Сообщение при пустой галерее -->
+                <div class="empty-gallery">
+                    <div class="empty-icon">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                    <p class="empty-message">В галерее пока нет работ</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary">Вернуться на главную</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Получение всех элементов картин
+            const paintingItems = document.querySelectorAll('.painting-item');
+
+            // Настройки для IntersectionObserver
+            const observerOptions = {
+                root: null,
+                rootMargin: '100px 0px', // Запуск анимации за 100px до видимости
+                threshold: 0.1 // Срабатывание при 10% видимости элемента
+            };
+
+            // Создание observer для анимаций
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // Добавление staggered-эффекта с задержкой
+                        setTimeout(() => {
+                            entry.target.classList.add('aos-animate');
+                        }, index * 50); // Задержка 50ms между элементами
+
+                        // Прекращение наблюдения после анимации
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Наблюдение за всеми элементами
+            paintingItems.forEach(item => {
+                observer.observe(item);
+            });
+
+            // Обработка элементов, уже видимых при загрузке (с staggered-эффектом)
+            setTimeout(() => {
+                paintingItems.forEach((item, index) => {
+                    const rect = item.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        setTimeout(() => {
+                            item.classList.add('aos-animate');
+                        }, index * 50);
+                    }
+                });
+            }, 100);
+        });
+    </script>
 {% endblock %}

@@ -1,54 +1,210 @@
-<!-- templates/core/blog_list.html -->
 {% extends 'base.html' %}
 
-{% block title %}Блог - Галерея Художника{% endblock %}
+{% block title %}Блог художника{% endblock %}
 
 {% block content %}
-    <!-- Blog List Section: Feed-style vertical list with floating images -->
-    <section class="blog-section py-5">
-        <h2 class="text-center mb-5 section-title">Блог</h2>
-        {% if posts %}
-            {% for post in posts %}
-                <article class="blog-post mb-5 p-4 bg-white rounded shadow-lg">
-                    <h3 class="blog-title mb-3">{{ post.title }}</h3>
-                    <p class="small text-muted mb-3">{{ post.pub_date|date:"d F Y" }}</p>
-                    <div class="blog-content">
-                        {% if post.image %}
-                            <img src="{{ post.image.url }}" class="blog-img float-start me-3 mb-3" alt="{{ post.title }}">
-                        {% endif %}
-                        <p>{{ post.content }}</p> <!-- Full content; truncate if too long, but showing full as no detail view -->
-                    </div>
-                </article>
-            {% endfor %}
-
-            <!-- Pagination if needed -->
-            {% if is_paginated %}
-                <nav aria-label="Pagination" class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
-                        {% endif %}
-
-                        {% for i in paginator.page_range %}
-                            {% if page_obj.number == i %}
-                                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if page_obj.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a></li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">Следующая</span></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
-        {% else %}
-            <p class="text-center">Нет постов в блоге на данный момент.</p>
-        {% endif %}
+    <!-- Секция героя блога -->
+    <section class="blog-hero">
+        <div class="container">
+            <div class="blog-hero-content" data-aos>
+                <h1 class="blog-page-title">Блог художника</h1>
+                <p class="blog-page-subtitle">Мысли, процессы и вдохновение</p>
+            </div>
+        </div>
     </section>
+
+    <!-- Секция списка постов блога (вертикальный фид с плавающими изображениями) -->
+    <section class="blog-section py-5">
+        <div class="container">
+            {% if posts %}
+                {% for post in posts %}
+                    <article class="blog-post" data-aos>
+                        <h3 class="blog-title">{{ post.title }}</h3>
+                        <p class="blog-date">{{ post.pub_date|date:"d E Y" }}</p>
+                        <div class="blog-content">
+                            {% if post.cover_image or post.images.exists %}
+                                <div class="blog-image-slider">
+                                    <div class="slider-container">
+                                        <div class="slider-wrapper">
+                                            {% if post.cover_image %}
+                                                <img src="{{ post.cover_image.url }}"
+                                                     class="slider-image active"
+                                                     alt="{{ post.title }}"
+                                                     data-index="0">
+                                            {% endif %}
+                                            {% for image in post.images.all %}
+                                                <img src="{{ image.image.url }}"
+                                                     class="slider-image {% if not post.cover_image and forloop.first %}active{% endif %}"
+                                                     alt="{{ post.title }} - изображение {{ forloop.counter }}"
+                                                     data-index="{% if post.cover_image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}">
+                                            {% endfor %}
+                                        </div>
+
+                                        {% if post.cover_image and post.images.exists or post.images.count > 1 %}
+                                            <div class="slider-indicators">
+                                                {% if post.cover_image %}
+                                                    <button class="indicator active"
+                                                            data-target="0"
+                                                            aria-label="Показать изображение 1"></button>
+                                                {% endif %}
+                                                {% for image in post.images.all %}
+                                                    <button class="indicator {% if not post.cover_image and forloop.first %}active{% endif %}"
+                                                            data-target="{% if post.cover_image %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}"
+                                                            aria-label="Показать изображение {% if post.cover_image %}{{ forloop.counter|add:1 }}{% else %}{{ forloop.counter }}{% endif %}"></button>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="blog-text">
+                                <p>{{ post.content }}</p>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+
+                <!-- Современная пагинация -->
+                {% if is_paginated %}
+                    <nav class="blog-pagination-wrapper" aria-label="Навигация по блогу">
+                        <div class="blog-pagination">
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}"
+                                   class="blog-page-link prev">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span class="blog-page-link-text">Предыдущие</span>
+                                </a>
+                            {% endif %}
+
+                            <div class="blog-page-info">
+                                <span class="current-page">{{ page_obj.number }}</span>
+                                <span class="page-divider">/</span>
+                                <span class="total-pages">{{ paginator.num_pages }}</span>
+                            </div>
+
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}"
+                                   class="blog-page-link next">
+                                    <span class="blog-page-link-text">Следующие</span>
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <!-- Сообщение при отсутствии постов -->
+                <div class="empty-blog-state text-center py-5">
+                    <p class="empty-blog-message">Нет постов в блоге на данный момент.</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">На главную</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация всех слайдеров изображений в постах
+            const sliders = document.querySelectorAll('.blog-image-slider');
+
+            sliders.forEach(slider => {
+                const indicators = slider.querySelectorAll('.indicator');
+                const images = slider.querySelectorAll('.slider-image');
+                const sliderContainer = slider.querySelector('.slider-container');
+                const sliderWrapper = slider.querySelector('.slider-wrapper');
+
+                // Проверка количества изображений и добавление класса для одиночных изображений
+                if (images.length <= 1) {
+                    slider.classList.add('single-image');
+                }
+
+                // Переменные для тач-свайпа
+                let touchStartX = 0;
+                let touchEndX = 0;
+                let currentIndex = 0;
+
+                // Переменные для мыши (для десктопа)
+                let mouseX = 0;
+                let isMouseOverImage = false;
+
+                // Функция для переключения изображения по индексу
+                function switchToImage(index) {
+                    images.forEach(img => img.classList.remove('active'));
+                    indicators.forEach(ind => ind.classList.remove('active'));
+
+                    if (images[index]) {
+                        images[index].classList.add('active');
+                    }
+                    if (indicators[index]) {
+                        indicators[index].classList.add('active');
+                    }
+                    currentIndex = index;
+                }
+
+                // Обработчики кликов по индикаторам
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        switchToImage(index);
+                    });
+                });
+
+                // Обработка движения мыши для десктопа (если больше 1 изображения и ширина > 768px)
+                if (images.length > 1 && window.innerWidth > 768) {
+                    sliderWrapper.addEventListener('mouseenter', function() {
+                        isMouseOverImage = true;
+                    });
+
+                    sliderWrapper.addEventListener('mouseleave', function() {
+                        isMouseOverImage = false;
+                    });
+
+                    sliderWrapper.addEventListener('mousemove', function(e) {
+                        if (!isMouseOverImage) return;
+
+                        const rect = sliderWrapper.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const percentage = x / rect.width;
+                        const targetIndex = Math.floor(percentage * images.length);
+
+                        if (targetIndex !== currentIndex && targetIndex >= 0 && targetIndex < images.length) {
+                            switchToImage(targetIndex);
+                        }
+                    });
+                }
+
+                // Обработка тач-событий для свайпа (если поддерживается тач)
+                if ('ontouchstart' in window) {
+                    sliderContainer.addEventListener('touchstart', function(e) {
+                        touchStartX = e.changedTouches[0].screenX;
+                    }, { passive: true });
+
+                    sliderContainer.addEventListener('touchend', function(e) {
+                        touchEndX = e.changedTouches[0].screenX;
+                        handleSwipe();
+                    }, { passive: true });
+
+                    // Функция обработки свайпа
+                    function handleSwipe() {
+                        const swipeThreshold = 50;
+                        const diff = touchStartX - touchEndX;
+
+                        if (Math.abs(diff) > swipeThreshold) {
+                            if (diff > 0 && currentIndex < images.length - 1) {
+                                // Свайп влево - следующее изображение
+                                switchToImage(currentIndex + 1);
+                            } else if (diff < 0 && currentIndex > 0) {
+                                // Свайп вправо - предыдущее изображение
+                                switchToImage(currentIndex - 1);
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
