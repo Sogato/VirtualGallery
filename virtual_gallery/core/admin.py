@@ -72,9 +72,8 @@ class ArtistAdmin(admin.ModelAdmin):
         return not Artist.objects.exists()
 
     def delete_queryset(self, request, queryset):
-        """Удаляет объекты с вызовом метода delete() для очистки файлов."""
-        for obj in queryset:
-            obj.delete()
+        """Удаляет объекты (сигналы pre_delete обработают файлы)."""
+        super().delete_queryset(request, queryset)
 
 
 class PaintingAdmin(admin.ModelAdmin):
@@ -117,9 +116,8 @@ class PaintingAdmin(admin.ModelAdmin):
     remove_featured.short_description = "Убрать из избранных"
 
     def delete_queryset(self, request, queryset):
-        """Удаляет объекты с вызовом метода delete() для очистки файлов."""
-        for obj in queryset:
-            obj.delete()
+        """Удаляет объекты (сигналы pre_delete обработают файлы)."""
+        super().delete_queryset(request, queryset)
 
 
 class BlogPostAdmin(admin.ModelAdmin):
@@ -155,9 +153,8 @@ class BlogPostAdmin(admin.ModelAdmin):
     content_preview.short_description = "Содержание"
 
     def delete_queryset(self, request, queryset):
-        """Удаляет объекты с вызовом метода delete() для очистки файлов."""
-        for obj in queryset:
-            obj.delete()
+        """Удаляет объекты (сигналы pre_delete обработают файлы)."""
+        super().delete_queryset(request, queryset)
 
     def save_model(self, request, obj, form, change):
         """Сохраняет модель с обработкой изображений."""
@@ -193,8 +190,7 @@ class ContactRequestAdmin(admin.ModelAdmin):
 
     def delete_queryset(self, request, queryset):
         """Удаляет объекты (нет файлов, но для consistency)."""
-        for obj in queryset:
-            obj.delete()
+        super().delete_queryset(request, queryset)
 
 
 class SiteContactAdmin(admin.ModelAdmin):
@@ -241,8 +237,7 @@ class SiteContactAdmin(admin.ModelAdmin):
 
     def delete_queryset(self, request, queryset):
         """Удаляет объекты (нет файлов, но для consistency)."""
-        for obj in queryset:
-            obj.delete()
+        super().delete_queryset(request, queryset)
 
 
 # Кастомизация админ-сайта

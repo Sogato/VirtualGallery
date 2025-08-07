@@ -5,6 +5,7 @@ from PIL.Image import Resampling
 from io import BytesIO
 from django.core.files.base import ContentFile
 import os
+from .storage import OverwriteStorage
 
 
 def crop_to_aspect(image, target_width, target_height):
@@ -90,6 +91,7 @@ class Artist(models.Model):
         verbose_name="Краткая биография"
     )
     photo = models.ImageField(
+        storage=OverwriteStorage(),
         upload_to='artist/',
         null=True,
         blank=True,
@@ -111,14 +113,11 @@ class Artist(models.Model):
             if old_self.photo and old_self.photo != self.photo:
                 old_self.photo.delete(save=False)
 
-        # Обрабатываем фото: ресайз до 800 пикселей ширины, качество 90.
-        process_image(self.photo, max_width=800, quality=90)
-        super().save(*args, **kwargs)
+        # Обрабатываем фото (только при создании или изменении поля): ресайз до 800 пикселей ширины, качество 90.
+        if self.photo and (not self.pk or old_self.photo != self.photo):
+            process_image(self.photo, max_width=800, quality=90)
 
-    def delete(self, *args, **kwargs):
-        if self.photo:
-            self.photo.delete(save=False)
-        super().delete(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Painting(models.Model):
@@ -255,17 +254,6 @@ class Painting(models.Model):
 
         super().save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        if self.image:
-            self.image.delete(save=False)
-        if self.small_image:
-            self.small_image.delete(save=False)
-        if self.medium_image:
-            self.medium_image.delete(save=False)
-        if self.large_image:
-            self.large_image.delete(save=False)
-        super().delete(*args, **kwargs)
-
 
 class BlogPost(models.Model):
     title = models.CharField(
@@ -287,6 +275,7 @@ class BlogPost(models.Model):
         help_text="Автоматически генерируется из заголовка для URL."
     )
     cover_image = models.ImageField(
+        storage=OverwriteStorage(),
         upload_to='blog/covers/',
         null=True,
         blank=True,
@@ -302,11 +291,13 @@ class BlogPost(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        old_cover = None
         if self.pk:
             # При обновлении: удаляем старую обложку, если она изменилась.
             old_self = BlogPost.objects.get(pk=self.pk)
-            if old_self.cover_image and old_self.cover_image != self.cover_image:
-                old_self.cover_image.delete(save=False)
+            old_cover = old_self.cover_image
+            if old_cover and old_cover != self.cover_image:
+                old_cover.delete(save=False)
 
         if not self.slug:
             # Генерируем уникальный slug на основе заголовка.
@@ -317,14 +308,11 @@ class BlogPost(models.Model):
                 self.slug = f"{original_slug}-{counter}"
                 counter += 1
 
-        # Обрабатываем обложку: ресайз до 800 пикселей ширины, качество 85.
-        process_image(self.cover_image, max_width=800, quality=85)
-        super().save(*args, **kwargs)
+        # Обрабатываем обложку (только при создании или изменении поля): ресайз до 800 пикселей ширины, качество 85.
+        if self.cover_image and (not self.pk or old_cover != self.cover_image):
+            process_image(self.cover_image, max_width=800, quality=85)
 
-    def delete(self, *args, **kwargs):
-        if self.cover_image:
-            self.cover_image.delete(save=False)
-        super().delete(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class BlogPostImage(models.Model):
@@ -335,6 +323,7 @@ class BlogPostImage(models.Model):
         verbose_name="Пост"
     )
     image = models.ImageField(
+        storage=OverwriteStorage(),
         upload_to='blog/images/',
         null=True,
         blank=True,
@@ -350,20 +339,19 @@ class BlogPostImage(models.Model):
         return f'Изображение для поста "{self.post.title}"'
 
     def save(self, *args, **kwargs):
+        old_image = None
         if self.pk:
             # При обновлении: удаляем старое изображение, если оно изменилось.
             old_self = BlogPostImage.objects.get(pk=self.pk)
-            if old_self.image and old_self.image != self.image:
-                old_self.image.delete(save=False)
+            old_image = old_self.image
+            if old_image and old_image != self.image:
+                old_image.delete(save=False)
 
-        # Обрабатываем изображение: ресайз до 800 пикселей ширины, качество 85.
-        process_image(self.image, max_width=800, quality=85)
+        # Обрабатываем изображение (только при создании или изменении поля): ресайз до 800 пикселей ширины, качество 85.
+        if self.image and (not self.pk or old_image != self.image):
+            process_image(self.image, max_width=800, quality=85)
+
         super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        if self.image:
-            self.image.delete(save=False)
-        super().delete(*args, **kwargs)
 
 
 class ContactRequest(models.Model):
