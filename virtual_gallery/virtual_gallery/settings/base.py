@@ -17,7 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',  # Для улучшения виджетов форм в шаблонах
 
-    'core',  # Основное приложение галереи
+    'core.apps.CoreConfig',  # Основное приложение галереи
 ]
 
 # Middleware: обработчики запросов
