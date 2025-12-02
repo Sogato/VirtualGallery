@@ -5,7 +5,16 @@
     <!-- Мета-теги и заголовок -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}Виртуальная Галерея{% endblock %}</title>
+    <meta name="description" content="{% block description %}Галерея акварельных пейзажей России художницы Татьяны Дьяковой{% endblock %}">
+
+    <!-- Open Graph для соцсетей -->
+    <meta property="og:title" content="{% block title %}Виртуальная Галерея{% endblock %}">
+    <meta property="og:description" content="{% block description %}Галерея акварельных пейзажей художницы Татьяны Дьяковой{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="Татьяна Дьякова – Художница">
 
     <!-- Внешние стили и шрифты -->
     <!-- Bootstrap 5 CSS via CDN -->

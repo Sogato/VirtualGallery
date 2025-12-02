@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}Главная страница{% endblock %}
+{% block title %}Татьяна Дьякова – Художник акварельных пейзажей России{% endblock %}
+
+{% block description %}Экономист по профессии, художник в душе. Акварельные пейзажи России через призму личного восприятия. Смотрите работы и свяжитесь для заказа картин.{% endblock %}
 
 {% block content %}
     <!-- Секция героя с информацией о художнике (полноэкранная) -->
@@ -11,7 +13,7 @@
                     <div class="artist-content">
                         <h1 class="artist-name-hero">
                             <span class="name-line">{{ artist.name }}</span>
-                            <span class="artist-subtitle">Художник</span>
+                            <span class="artist-subtitle">Художница</span>
                         </h1>
                         <div class="bio-wrapper">
                             <p class="artist-bio-text">{{ artist.bio }}</p>
