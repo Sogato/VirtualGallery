@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ object.title }}{% endblock %}
+{% block title %}{{ object.title }} | Татьяна Дьякова{% endblock %}
+
+{% block description %}Работа художницы Татьяны Дьяковой. Год создания: {{ object.creation_date.year }}.{% endblock %}
+
+{% block og_image %}
+<meta property="og:image" content="https://tatyana-dyakova.ru{{ object.large_image.url }}">
+{% endblock %}
 
 {% block content %}
     <!-- Навигация хлебных крошек -->
