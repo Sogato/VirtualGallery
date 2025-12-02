@@ -29,6 +29,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - ADMIN_URL=${ADMIN_URL}
     depends_on:
       db:
         condition: service_healthy
