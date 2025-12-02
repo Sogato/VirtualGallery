@@ -96,61 +96,67 @@ SiteContact (Контактная информация сайта)
 VirtualGallery/
 ├── virtual_gallery/          # Корневая директория Django проекта
 │   ├── core/                 # Основное приложение галереи
-│   │   ├── management/
-│   │   │   └── commands/     # Кастомные команды управления
+│   │   └── management/       
+│   │   │   ├── __init__.py
+│   │   │   └── commands/                  # Кастомные команды управления
+│   │   │       ├── __init__.py
+│   │   │       ├── clear_db.py            # Команда очистки БД
+│   │   │       └── populate_db.py         # Команда заполнения БД тестовыми данными
 │   │   ├── migrations/       # Миграции базы данных
-│   │   ├── templates/
-│   │   │   ├── base.html     # Базовый шаблон
-│   │   │   └── core/
-│   │   │       ├── home.html              # Главная страница
-│   │   │       ├── painting_list.html     # Каталог картин
-│   │   │       ├── painting_detail.html   # Детальная страница картины
-│   │   │       ├── blog_list.html         # Список постов блога
-│   │   │       └── contacts.html          # Страница контактов
 │   │   ├── __init__.py
-│   │   ├── models.py         # Модели данных
-│   │   ├── views.py          # Представления
-│   │   ├── forms.py          # Формы (ContactForm)
-│   │   ├── urls.py           # URL-маршруты приложения
 │   │   ├── admin.py          # Настройки админ-панели
 │   │   ├── apps.py           # Конфигурация приложения
+│   │   ├── forms.py          # Формы (ContactForm)
+│   │   ├── middleware.py     # Middleware для игнорирования DevTools запросов
+│   │   ├── models.py         # Модели данных
+│   │   ├── signals.py        # Сигналы для автоудаления медиа-файлов
 │   │   ├── storage.py        # Кастомное хранилище файлов
-│   │   └── middleware.py     # Кастомные middleware
+│   │   ├── tests.py          # Unit-тесты приложения
+│   │   ├── views.py          # Представления
+│   │   └── urls.py           # URL-маршруты приложения
 │   ├── virtual_gallery/      # Пакет настроек проекта
-│   │   ├── settings/
+│   │   └── settings/
 │   │   │   ├── __init__.py
 │   │   │   ├── base.py       # Общие настройки для всех окружений
-│   │   │   ├── dev.py        # Настройки для разработки (DEBUG=True)
-│   │   │   └── prod.py       # Настройки для production (DEBUG=False, security)
+│   │   │   ├── dev.py        # Настройки для разработки
+│   │   │   └── prod.py       # Настройки для production
 │   │   ├── __init__.py
-│   │   ├── urls.py           # Корневые URL-маршруты
+│   │   ├── asgi.py           # ASGI для dev (→ dev settings)
 │   │   ├── wsgi.py           # WSGI для production (→ prod settings)
-│   │   └── asgi.py           # ASGI для dev (→ dev settings)
+│   │   └── urls.py           # Корневые URL-маршруты
+│   ├── templates/            # Общие шаблоны проекта
+│   │   ├── base.html         # Базовый шаблон
+│   │   └── core/
+│   │       ├── home.html              # Главная страница
+│   │       ├── painting_list.html     # Каталог картин
+│   │       ├── painting_detail.html   # Детальная страница картины
+│   │       ├── blog_list.html         # Список постов блога
+│   │       └── contacts.html          # Страница контактов
 │   ├── media/                # Загруженные файлы (изображения)
-│   │   ├── paintings/
+│   │   ├── artist/           # Фото художника
+│   │   ├── sample_images/    # Фото для заполнения БД через commands/populate_db.py
+│   │   └── paintings/
 │   │   │   ├── original/     # Оригинальные изображения картин
 │   │   │   ├── small/        # Малые версии (400x300)
 │   │   │   ├── medium/       # Средние версии (800x600)
 │   │   │   └── large/        # Большие версии (1920px)
-│   │   ├── artist/           # Фото художника
 │   │   └── blog/
 │   │       ├── covers/       # Обложки постов
 │   │       └── images/       # Изображения для постов
 │   ├── static/               # Статические файлы (CSS, JS, изображения)
-│   ├── staticfiles/          # Собранные статические файлы (collectstatic)
-│   ├── templates/            # Общие шаблоны проекта
 │   ├── Dockerfile            # Сборка Docker-контейнера Django
 │   ├── manage.py             # Утилита управления Django
 │   └── requirements.txt      # Python зависимости
 ├── nginx/                    # Конфигурация Nginx
-│   ├── ssl/                  # SSL сертификаты (не в git)
+│   └── ssl/                  # SSL сертификаты (не в git)
 │   │   ├── fullchain.pem     # Полная цепочка сертификатов
 │   │   └── privkey.pem       # Приватный ключ
 │   └── nginx.conf            # Конфигурация веб-сервера
 ├── docs/                     # Документация и скриншоты
-│   ├── home.png              # Скриншот главной страницы
-│   ├── catalog.png           # Скриншот каталога
-│   └── painting.png          # Скриншот детальной страницы
+│   └── screenshots/          # Скриншоты интерфейса
+│       ├── home.png          # Скриншот главной страницы
+│       ├── catalog.png       # Скриншот каталога
+│       └── painting.png      # Скриншот детальной страницы
 ├── .env                      # Переменные окружения (не в git)
 ├── .env.example              # Пример переменных окружения
 ├── .gitignore                # Игнорируемые файлы для git
@@ -182,11 +188,10 @@ SECRET_KEY=your-very-long-and-secure-secret-key-here
 DB_NAME=virtual_gallery
 DB_USER=postgres
 DB_PASSWORD=your-strong-database-password
-DB_HOST=db
-DB_PORT=5432
 ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 ADMIN_URL=your-secret-admin-path/
 ```
+> **Примечание:** В режиме prod `DB_HOST` и `DB_PORT` явно указаны в `docker-compose.yml` (`db:5432`)
 
 **Важно:** Используйте уникальный и сложный путь для `ADMIN_URL`. Не используйте стандартный `admin/` в production.
 
@@ -197,8 +202,6 @@ ADMIN_URL=your-secret-admin-path/
 ```nginx
 server_name yourdomain.com www.yourdomain.com;
 ```
-
-Найдите строки с `tatyana-dyakova.ru` и замените на ваш домен в обоих блоках `server` (HTTP и HTTPS).
 
 #### 4. Подготовка SSL сертификатов
 
@@ -246,12 +249,14 @@ SECRET_KEY=your-dev-secret-key-here
 DB_NAME=gallery_dev
 DB_USER=postgres
 DB_PASSWORD=your-local-db-password
-DB_HOST=localhost
-DB_PORT=5432
 ADMIN_URL=admin/
 ```
 
+> **Примечание:** В режиме dev `DB_HOST` и `DB_PORT` жёстко заданы в `settings/dev.py` (`localhost:5432`)
+
 #### 3. Настройка базы данных
+
+Убедитесь, что PostgreSQL запущен локально, и создайте базу данных:
 
 ```bash
 createdb gallery_dev
@@ -419,16 +424,14 @@ python manage.py test core.tests.PaintingModelTest.test_painting_creation_with_i
 
 ### Переменные окружения (.env)
 
-| Переменная | Описание | Пример | Обязательна |
-|------------|----------|--------|-------------|
-| `SECRET_KEY` | Секретный ключ Django | `django-insecure-abc123...` | ✅ Да |
-| `DB_NAME` | Имя базы данных PostgreSQL | `virtual_gallery` | ✅ Да |
-| `DB_USER` | Пользователь базы данных | `postgres` | ✅ Да |
-| `DB_PASSWORD` | Пароль базы данных | `strongpassword123` | ✅ Да |
-| `DB_HOST` | Хост БД (в Docker: `db`, локально: `localhost`) | `db` | ✅ Да |
-| `DB_PORT` | Порт базы данных | `5432` | ✅ Да |
-| `ALLOWED_HOSTS` | Разрешенные домены (через запятую) | `example.com,www.example.com` | ✅ Да |
-| `ADMIN_URL` | URL-путь админ-панели (с `/` в конце) | `secret-admin-path-123/` | ✅ Да |
+| Переменная | Описание | Пример |
+|------------|----------|--------|
+| `SECRET_KEY` | Секретный ключ Django | `django-insecure-abc123...` |
+| `DB_NAME` | Имя базы данных PostgreSQL | `virtual_gallery` |
+| `DB_USER` | Пользователь базы данных | `postgres` |
+| `DB_PASSWORD` | Пароль базы данных | `strongpassword123` |
+| `ALLOWED_HOSTS` | Разрешенные домены (через запятую) | `example.com,www.example.com` |
+| `ADMIN_URL` | URL-путь админ-панели (с `/` в конце) | `secret-admin-path-123/` |
 
 ## Автор и ссылки
 
